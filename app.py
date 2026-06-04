@@ -277,6 +277,10 @@ def allowed_origin(handler):
     if not origin:
         return None
     parsed = urlparse(origin)
+    request_host = (handler.headers.get("X-Forwarded-Host") or handler.headers.get("Host") or "").split(",", 1)[0].strip()
+    request_hostname = request_host.split(":", 1)[0].lower()
+    if parsed.hostname and parsed.hostname.lower() == request_hostname:
+        return origin
     if parsed.hostname in ("127.0.0.1", "localhost") or origin in TRUSTED_ORIGINS:
         return origin
     return None

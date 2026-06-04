@@ -238,6 +238,10 @@ class CyberScanCoreTests(unittest.TestCase):
     def test_post_origin_rejects_cross_origin_requests(self):
         self.assertTrue(verify_post_origin(FakeHandler({})))
         self.assertTrue(verify_post_origin(FakeHandler({"Origin": "http://127.0.0.1:8006"})))
+        self.assertTrue(verify_post_origin(FakeHandler({
+            "Origin": "https://cyberscan-demo.onrender.com",
+            "Host": "cyberscan-demo.onrender.com",
+        })))
         self.assertFalse(verify_post_origin(FakeHandler({"Origin": "https://evil.example"})))
 
     def test_login_endpoint_rejects_wrong_password(self):
