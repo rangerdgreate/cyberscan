@@ -1,0 +1,136 @@
+{
+    "scanner": {
+        "name": "CyberScan",
+        "version": "1.2.0"
+    },
+    "scan": {
+        "name": "http://testphp.vulnweb.com",
+        "type": "Full",
+        "targets": [
+            "http://testphp.vulnweb.com"
+        ],
+        "tags": [
+            "depth-3",
+            "full"
+        ],
+        "profile": {
+            "description": "Balanced crawl and safe OWASP-aligned scan.",
+            "modules": [
+                "Controlled crawling",
+                "Form and input review",
+                "Safe SQL/XSS indicators",
+                "Sensitive file and directory checks"
+            ],
+            "safe_probe_limit": 12
+        },
+        "settings": {
+            "max_depth": 3,
+            "include_paths": [],
+            "exclude_paths": [
+                "/logout|/signout"
+            ],
+            "rate_limit": 10,
+            "max_pages": 100,
+            "crawled_urls": []
+        }
+    },
+    "target": "http://testphp.vulnweb.com",
+    "final_url": "http://testphp.vulnweb.com",
+    "scan_date": "2026-05-26T14:13:22.070492",
+    "duration_seconds": 68.91,
+    "summary": {
+        "Critical": 0,
+        "High": 2,
+        "Medium": 0,
+        "Low": 0,
+        "Info": 0
+    },
+    "affected_hosts": [
+        {
+            "host": "www.testphp.vulnweb.com",
+            "findings": 2
+        },
+        {
+            "host": "testphp.vulnweb.com",
+            "findings": 1
+        }
+    ],
+    "category_summary": {
+        "A02: Cryptographic Failures": 1,
+        "Security Misconfiguration": 1
+    },
+    "cwe_summary": {
+        "CWE-319": 1,
+        "CWE-N/A": 1
+    },
+    "confidence_summary": {
+        "High": 1,
+        "Medium": 1
+    },
+    "discovery_sources": [],
+    "robots_policies": [],
+    "comparison": {
+        "new": 0,
+        "existing": 2,
+        "fixed": 0,
+        "fixed_findings": []
+    },
+    "prevention_plan": [
+        {
+            "title": "Target Unreachable",
+            "recommendation": "Check if the target URL is correct and accessible.",
+            "severity": "High",
+            "owasp_category": "Security Misconfiguration",
+            "cwe": "CWE-N/A",
+            "affected_urls": [
+                "http://testphp.vulnweb.com"
+            ],
+            "count": 1
+        },
+        {
+            "title": "Website Does Not Use HTTPS",
+            "recommendation": "Use HTTPS with a valid TLS/SSL certificate.",
+            "severity": "High",
+            "owasp_category": "A02: Cryptographic Failures",
+            "cwe": "CWE-319",
+            "affected_urls": [
+                "http://testphp.vulnweb.com"
+            ],
+            "count": 1
+        }
+    ],
+    "findings": [
+        {
+            "title": "Website Does Not Use HTTPS",
+            "severity": "High",
+            "owasp_category": "A02: Cryptographic Failures",
+            "cwe": "CWE-319",
+            "confidence": "High",
+            "validation_status": "Observed",
+            "description": "The target website is using HTTP instead of HTTPS.",
+            "recommendation": "Use HTTPS with a valid TLS/SSL certificate.",
+            "affected_url": "http://testphp.vulnweb.com",
+            "evidence": "The target website is using HTTP instead of HTTPS.",
+            "status_code": null,
+            "detector": "CyberScan",
+            "lifecycle_status": "Existing",
+            "fingerprint": "website does not use https|high|a02: cryptographic failures|cwe-319|http://testphp.vulnweb.com"
+        },
+        {
+            "title": "Target Unreachable",
+            "severity": "High",
+            "owasp_category": "Security Misconfiguration",
+            "cwe": "CWE-N/A",
+            "confidence": "Medium",
+            "validation_status": "Needs Manual Validation",
+            "description": "The scanner could not reach the target URL: http://testphp.vulnweb.com",
+            "recommendation": "Check if the target URL is correct and accessible.",
+            "affected_url": "http://testphp.vulnweb.com",
+            "evidence": "The scanner could not reach the target URL: http://testphp.vulnweb.com",
+            "status_code": null,
+            "detector": "CyberScan",
+            "lifecycle_status": "Existing",
+            "fingerprint": "target unreachable|high|security misconfiguration|cwe-n/a|http://testphp.vulnweb.com"
+        }
+    ]
+}

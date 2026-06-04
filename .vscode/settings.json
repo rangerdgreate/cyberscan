@@ -1,0 +1,18 @@
+{
+  "files.exclude": {
+    "**/__pycache__": true,
+    "**/*.pyc": true,
+    "**/*.err.log": true,
+    "**/*.out.log": true,
+    "reports/docx_build_paper_change_guide": true
+  },
+  "search.exclude": {
+    "**/__pycache__": true,
+    "**/*.pyc": true,
+    "**/*.err.log": true,
+    "**/*.out.log": true,
+    "reports": true
+  },
+  "explorer.sortOrder": "type",
+  "explorer.compactFolders": false
+}

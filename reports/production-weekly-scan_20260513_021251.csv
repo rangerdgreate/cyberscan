@@ -1,0 +1,8 @@
+Title,Severity,OWASP Category,Description,Recommendation
+Missing Security Header: Strict-Transport-Security,Medium,A05: Security Misconfiguration,HSTS header is missing. This helps enforce HTTPS connections.,Add Strict-Transport-Security header.
+Missing Security Header: Content-Security-Policy,High,A03: Injection,Content Security Policy is missing. This may increase XSS risk.,Add a strong Content-Security-Policy header.
+Missing Security Header: X-Frame-Options,Medium,A05: Security Misconfiguration,X-Frame-Options header is missing. The site may be vulnerable to clickjacking.,Add X-Frame-Options: DENY or SAMEORIGIN.
+Missing Security Header: X-Content-Type-Options,Low,A05: Security Misconfiguration,X-Content-Type-Options header is missing.,Add X-Content-Type-Options: nosniff.
+Missing Security Header: Referrer-Policy,Low,A05: Security Misconfiguration,Referrer-Policy header is missing.,Add Referrer-Policy: no-referrer or strict-origin-when-cross-origin.
+Missing Security Header: Permissions-Policy,Low,A05: Security Misconfiguration,Permissions-Policy header is missing.,Add Permissions-Policy to limit browser feature access.
+Information Disclosure in Header: Server,Low,A05: Security Misconfiguration,The response exposes server technology information: Server: Heroku,Remove or minimize technology/version information from HTTP response headers.

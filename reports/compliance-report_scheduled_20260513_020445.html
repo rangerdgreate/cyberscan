@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Compliance Report - CyberScan Report</title>
+  <style>
+    body { margin: 0; font-family: Arial, sans-serif; color: #172033; background: #f5f7fb; }
+    main { max-width: 1040px; margin: 0 auto; padding: 34px 24px; }
+    h1 { margin: 0 0 8px; }
+    .meta { color: #56657d; margin: 0 0 24px; }
+    .cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 12px; margin: 22px 0; }
+    .cards div, section { background: white; border: 1px solid #dbe3ef; border-radius: 8px; padding: 18px; }
+    .cards span { display: block; color: #66758d; font-size: 13px; }
+    .cards strong { font-size: 26px; }
+    table { width: 100%; border-collapse: collapse; background: white; }
+    th, td { padding: 12px; border-bottom: 1px solid #e6ecf5; text-align: left; vertical-align: top; }
+    th { background: #edf3fb; }
+  </style>
+</head>
+<body>
+  <main>
+    <h1>Compliance Report</h1>
+    <p class="meta">Generated 2026-05-13T02:04:45 by scheduled automation for https://api.example.com</p>
+    <section>
+      <h2>Scan Context</h2>
+      <p><strong>web</strong></p>
+      <p>OWASP Top 10 and compliance mapping</p>
+    </section>
+    <div class="cards"><div><span>Critical</span><strong>0</strong></div><div><span>High</span><strong>1</strong></div><div><span>Medium</span><strong>1</strong></div><div><span>Low</span><strong>0</strong></div><div><span>Info</span><strong>0</strong></div></div>
+    <section>
+      <h2>Findings and Remediation</h2>
+      <table>
+        <thead><tr><th>Severity</th><th>Finding</th><th>Category</th><th>Recommendation</th></tr></thead>
+        <tbody><tr><td>Medium</td><td>SSL Certificate Check Failed</td><td>A02: Cryptographic Failures</td><td>Make sure the website has a valid SSL/TLS certificate.</td></tr><tr><td>High</td><td>Target Unreachable</td><td>Security Misconfiguration</td><td>Check if the target URL is correct and accessible.</td></tr></tbody>
+      </table>
+    </section>
+  </main>
+</body>
+</html>

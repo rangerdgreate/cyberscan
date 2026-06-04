@@ -1,0 +1,3 @@
+Title,Severity,OWASP Category,Description,Recommendation
+SSL Certificate Check Failed,Medium,A02: Cryptographic Failures,The scanner could not verify the SSL certificate. Error: [Errno 11001] getaddrinfo failed,Make sure the website has a valid SSL/TLS certificate.
+Target Unreachable,High,Security Misconfiguration,"The scanner could not reach the target. Error: HTTPSConnectionPool(host='api.example.com', port=443): Max retries exceeded with url: / (Caused by NameResolutionError(""<urllib3.connection.HTTPSConnection object at 0x00000225AA4ABC50>: Failed to resolve 'api.example.com' ([Errno 11001] getaddrinfo failed)""))",Check if the target URL is correct and accessible.

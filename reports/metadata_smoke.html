@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CyberScan Report</title>
+  <style>
+    :root {
+      --bg: #081018;
+      --surface: #101928;
+      --panel: #141f2f;
+      --line: #24364d;
+      --text: #e6eef9;
+      --muted: #8ea3ba;
+      --blue: #28b1ff;
+      --amber: #f59e0b;
+      --red: #ef4444;
+      --orange: #f97316;
+      --green: #22c55e;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: "Bahnschrift", "Segoe UI Variable", "Aptos", "Segoe UI", Arial, sans-serif;
+      background: radial-gradient(circle at top right, rgba(40,177,255,.14), transparent 24%), var(--bg);
+      color: var(--text);
+    }
+    .page {
+      max-width: 1440px;
+      margin: 0 auto;
+      padding: 28px;
+    }
+    .hero {
+      background: linear-gradient(180deg, rgba(20,31,47,.95), rgba(13,21,33,.95));
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 28px;
+      margin-bottom: 18px;
+      box-shadow: 0 24px 70px rgba(0,0,0,.35);
+    }
+    .hero h1 { margin: 0 0 6px; font-size: 30px; }
+    .hero p { margin: 0; color: var(--muted); }
+    .meta {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 14px;
+      margin-top: 22px;
+    }
+    .card {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      padding: 16px;
+    }
+    .card span {
+      display: block;
+      color: var(--muted);
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: .04em;
+      margin-bottom: 8px;
+    }
+    .card strong {
+      font-size: 28px;
+      display: block;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: 2fr 1fr;
+      gap: 18px;
+      margin-bottom: 18px;
+    }
+    .panel {
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 20px;
+    }
+    .panel h2 {
+      margin: 0 0 14px;
+      font-size: 18px;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+    th, td {
+      text-align: left;
+      padding: 12px 10px;
+      border-bottom: 1px solid var(--line);
+      vertical-align: top;
+      font-size: 13px;
+    }
+    th {
+      color: #9fb2c7;
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: .05em;
+    }
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      padding: 4px 9px;
+      border-radius: 999px;
+      font-size: 11px;
+      font-weight: 700;
+    }
+    .badge.critical { background: #4b1720; color: #ffd4d8; }
+    .badge.high { background: #4a2607; color: #ffd7a3; }
+    .badge.med { background: #3f3208; color: #ffe184; }
+    .badge.low { background: #142d45; color: #9bd8ff; }
+    .badge.info { background: #102433; color: #9ce2ff; }
+    .list {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+    .list li {
+      display: flex;
+      justify-content: space-between;
+      padding: 12px 0;
+      border-bottom: 1px solid var(--line);
+    }
+    .empty {
+      text-align: center;
+      color: var(--muted);
+      padding: 36px 12px;
+    }
+    .note {
+      margin-top: 18px;
+      color: var(--muted);
+      font-size: 12px;
+    }
+  </style>
+</head>
+<body>
+  <main class="page">
+    <section class="hero">
+      <h1>CyberScan Report</h1>
+      <p>Automated OWASP Top 10-aligned web vulnerability scan results for authorized testing.</p>
+      <div class="meta">
+        <div class="card"><span>Scan Name</span><strong>Scan - 127.0.0.1:8006</strong></div>
+        <div class="card"><span>Scan Type</span><strong>Quick</strong></div>
+        <div class="card"><span>Target</span><strong>http://127.0.0.1:8006</strong></div>
+        <div class="card"><span>Final URL</span><strong>http://127.0.0.1:8006/</strong></div>
+        <div class="card"><span>Findings</span><strong>17</strong></div>
+        <div class="card"><span>Duration</span><strong>2.5s</strong></div>
+      </div>
+    </section>
+
+    <section class="grid">
+      <div class="panel">
+        <h2>Findings</h2>
+        <table>
+          <thead>
+            <tr>
+              <th>Severity</th>
+              <th>Title</th>
+              <th>OWASP Category</th>
+              <th>CWE</th>
+              <th>Confidence</th>
+              <th>Affected URL</th>
+              <th>Status</th>
+              <th>Validation</th>
+              <th>Evidence</th>
+              <th>Description</th>
+              <th>Recommendation</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td><span class='badge high'>High</span></td><td>Website Does Not Use HTTPS</td><td>A02: Cryptographic Failures</td><td>CWE-319</td><td>High</td><td>http://127.0.0.1:8006</td><td>New</td><td>Observed</td><td>The target website is using HTTP instead of HTTPS.</td><td>The target website is using HTTP instead of HTTPS.</td><td>Use HTTPS with a valid TLS/SSL certificate.</td></tr><tr><td><span class='badge med'>Medium</span></td><td>Missing Security Header: Strict-Transport-Security</td><td>A05: Security Misconfiguration</td><td>CWE-693</td><td>High</td><td>http://127.0.0.1:8006</td><td>New</td><td>Observed</td><td>HSTS header is missing. This helps enforce HTTPS connections.</td><td>HSTS header is missing. This helps enforce HTTPS connections.</td><td>Add Strict-Transport-Security header.</td></tr><tr><td><span class='badge high'>High</span></td><td>Missing Security Header: Content-Security-Policy</td><td>A03: Injection</td><td>CWE-79</td><td>High</td><td>http://127.0.0.1:8006</td><td>New</td><td>Observed</td><td>Content Security Policy is missing. This may increase XSS risk.</td><td>Content Security Policy is missing. This may increase XSS risk.</td><td>Add a strong Content-Security-Policy header.</td></tr><tr><td><span class='badge med'>Medium</span></td><td>Missing Security Header: X-Frame-Options</td><td>A05: Security Misconfiguration</td><td>CWE-1021</td><td>High</td><td>http://127.0.0.1:8006</td><td>New</td><td>Observed</td><td>X-Frame-Options header is missing. The site may be vulnerable to clickjacking.</td><td>X-Frame-Options header is missing. The site may be vulnerable to clickjacking.</td><td>Add X-Frame-Options: DENY or SAMEORIGIN.</td></tr><tr><td><span class='badge low'>Low</span></td><td>Missing Security Header: X-Content-Type-Options</td><td>A05: Security Misconfiguration</td><td>CWE-693</td><td>High</td><td>http://127.0.0.1:8006</td><td>New</td><td>Observed</td><td>X-Content-Type-Options header is missing.</td><td>X-Content-Type-Options header is missing.</td><td>Add X-Content-Type-Options: nosniff.</td></tr><tr><td><span class='badge low'>Low</span></td><td>Missing Security Header: Referrer-Policy</td><td>A05: Security Misconfiguration</td><td>CWE-693</td><td>High</td><td>http://127.0.0.1:8006</td><td>New</td><td>Observed</td><td>Referrer-Policy header is missing.</td><td>Referrer-Policy header is missing.</td><td>Add Referrer-Policy: no-referrer or strict-origin-when-cross-origin.</td></tr><tr><td><span class='badge low'>Low</span></td><td>Missing Security Header: Permissions-Policy</td><td>A05: Security Misconfiguration</td><td>CWE-693</td><td>High</td><td>http://127.0.0.1:8006</td><td>New</td><td>Observed</td><td>Permissions-Policy header is missing.</td><td>Permissions-Policy header is missing.</td><td>Add Permissions-Policy to limit browser feature access.</td></tr><tr><td><span class='badge low'>Low</span></td><td>Information Disclosure in Header: Server</td><td>A05: Security Misconfiguration</td><td>CWE-200</td><td>High</td><td>http://127.0.0.1:8006/</td><td>New</td><td>Observed</td><td>Server: CyberScanWeb/1.0 Python/3.13.2</td><td>The response exposes server technology information: Server: CyberScanWeb/1.0 Python/3.13.2</td><td>Remove or minimize technology/version information from HTTP response headers.</td></tr><tr><td><span class='badge med'>Medium</span></td><td>Form Uses GET Method: Form #1</td><td>A02: Cryptographic Failures</td><td>CWE-N/A</td><td>High</td><td>http://127.0.0.1:8006/</td><td>New</td><td>Observed</td><td>method=get action=http://127.0.0.1:8006/</td><td>A form uses the GET method. Sensitive data may appear in URLs.</td><td>Use POST for forms that send sensitive information.</td></tr><tr><td><span class='badge high'>High</span></td><td>Password Form Without HTTPS: Form #1</td><td>A07: Identification and Authentication Failures</td><td>CWE-319</td><td>High</td><td>http://127.0.0.1:8006/</td><td>New</td><td>Observed</td><td>1 password field(s) found</td><td>A password field was found on a non-HTTPS page.</td><td>Always use HTTPS for login and password forms.</td></tr><tr><td><span class='badge low'>Low</span></td><td>Sensitive Input Allows Browser Autocomplete: Form #1</td><td>A07: Identification and Authentication Failures</td><td>CWE-N/A</td><td>High</td><td>http://127.0.0.1:8006/</td><td>New</td><td>Observed</td><td>input=password autocomplete=not set</td><td>The input &#x27;password&#x27; may allow browser autocomplete for sensitive data.</td><td>Disable autocomplete for sensitive inputs or use context-appropriate autocomplete values.</td></tr><tr><td><span class='badge med'>Medium</span></td><td>Possible Error Message Disclosure</td><td>A05: Security Misconfiguration</td><td>CWE-209</td><td>Medium</td><td>http://127.0.0.1:8006/</td><td>New</td><td>Needs Manual Validation</td><td>stack trace</td><td>The page contains possible technical error text: stack trace</td><td>Disable detailed error messages in production.</td></tr><tr><td><span class='badge med'>Medium</span></td><td>SQL Injection Review Candidate: Form #1</td><td>A03: Injection</td><td>CWE-89</td><td>Medium</td><td>http://127.0.0.1:8006/</td><td>New</td><td>Needs Manual Validation</td><td>Fields: email</td><td>The form contains fields commonly connected to database lookup or authentication logic.</td><td>Validate input server-side and use parameterized queries for all database access.</td></tr><tr><td><span class='badge med'>Medium</span></td><td>Possible DOM XSS Source-to-Sink Pattern</td><td>A03: Injection</td><td>CWE-79</td><td>Medium</td><td>http://127.0.0.1:8006/</td><td>New</td><td>Needs Manual Validation</td><td>Sources: location.hash; sinks: innerHTML, insertAdjacentHTML, setTimeout(, setInterval(</td><td>Inline JavaScript appears to read browser-controlled input and write to risky HTML/script sinks.</td><td>Use safe DOM APIs such as textContent, sanitize HTML with a proven sanitizer, and avoid eval-like execution.</td></tr><tr><td><span class='badge med'>Medium</span></td><td>Stored XSS Review Candidate</td><td>A03: Injection</td><td>CWE-79</td><td>Medium</td><td>http://127.0.0.1:8006/</td><td>New</td><td>Needs Manual Validation</td><td>Fields: scanname</td><td>The page contains user-content style inputs that may later be rendered back to other users.</td><td>HTML-encode stored user content by output context, sanitize rich text, and add regression tests for stored XSS.</td></tr><tr><td><span class='badge low'>Low</span></td><td>Password Field Missing Explicit Autocomplete Context</td><td>A07: Identification and Authentication Failures</td><td>CWE-N/A</td><td>High</td><td>http://127.0.0.1:8006/</td><td>New</td><td>Observed</td><td>autocomplete values: not set</td><td>A password input does not declare current-password or new-password autocomplete context.</td><td>Use autocomplete=current-password for login forms and autocomplete=new-password for registration or reset forms.</td></tr><tr><td><span class='badge info'>Info</span></td><td>Client-Side Authentication Surface Detected</td><td>A07: Identification and Authentication Failures</td><td>CWE-N/A</td><td>Low</td><td>http://127.0.0.1:8006/</td><td>New</td><td>Informational</td><td>Matched terms: localStorage.setItem, Authorization, Bearer , /login</td><td>The page or bundled script references authentication tokens, login, registration, or password flows.</td><td>Review token storage, password reset protections, lockout/rate limiting, and session expiration server-side.</td></tr>
+          </tbody>
+        </table>
+      </div>
+        <div class="panel">
+        <h2>Severity Summary</h2>
+        <ul class="list">
+          <li><span>Critical</span><strong>0</strong></li>
+          <li><span>High</span><strong>3</strong></li>
+          <li><span>Medium</span><strong>7</strong></li>
+          <li><span>Low</span><strong>6</strong></li>
+          <li><span>Info</span><strong>1</strong></li>
+        </ul>
+
+        <h2 style="margin-top:18px;">Affected Hosts</h2>
+        <ul class="list">
+          <li><span>www.127.0.0.1:8006</span><strong>17</strong></li><li><span>127.0.0.1:8006</span><strong>16</strong></li>
+        </ul>
+
+        <h2 style="margin-top:18px;">OWASP Coverage</h2>
+        <ul class="list">
+          <li><span>A02: Cryptographic Failures</span><strong>2</strong></li><li><span>A05: Security Misconfiguration</span><strong>7</strong></li><li><span>A03: Injection</span><strong>4</strong></li><li><span>A07: Identification and Authentication Failures</span><strong>4</strong></li>
+        </ul>
+
+        <h2 style="margin-top:18px;">CWE Mapping</h2>
+        <ul class="list">
+          <li><span>CWE-319</span><strong>2</strong></li><li><span>CWE-693</span><strong>4</strong></li><li><span>CWE-79</span><strong>3</strong></li><li><span>CWE-1021</span><strong>1</strong></li><li><span>CWE-200</span><strong>1</strong></li><li><span>CWE-N/A</span><strong>4</strong></li><li><span>CWE-209</span><strong>1</strong></li><li><span>CWE-89</span><strong>1</strong></li>
+        </ul>
+
+        <h2 style="margin-top:18px;">Confidence</h2>
+        <ul class="list">
+          <li><span>High</span><strong>12</strong></li><li><span>Medium</span><strong>4</strong></li><li><span>Low</span><strong>1</strong></li>
+        </ul>
+
+        <h2 style="margin-top:18px;">Discovery Sources</h2>
+        <ul class="list">
+          <li><span>No extra discovery sources used</span><strong>0</strong></li>
+        </ul>
+      </div>
+    </section>
+
+    <p class="note">This report is intended for authorized security testing only. It does not perform destructive actions or exploit validation.</p>
+  </main>
+</body>
+</html>

@@ -1,0 +1,178 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="2100" viewBox="0 0 1600 2100">
+  <defs>
+    <style>
+      .bg { fill: #f8fafc; }
+      .title { font: 700 42px Arial, sans-serif; fill: #0f172a; }
+      .subtitle { font: 400 20px Arial, sans-serif; fill: #475569; }
+      .section { font: 700 27px Arial, sans-serif; fill: #0f172a; }
+      .label { font: 700 19px Arial, sans-serif; fill: #0f172a; }
+      .small { font: 400 16px Arial, sans-serif; fill: #334155; }
+      .tiny { font: 400 14px Arial, sans-serif; fill: #475569; }
+      .card { fill: #ffffff; stroke: #cbd5e1; stroke-width: 2; rx: 18; }
+      .box { fill: #eff6ff; stroke: #2563eb; stroke-width: 2; rx: 12; }
+      .box2 { fill: #ecfdf5; stroke: #16a34a; stroke-width: 2; rx: 12; }
+      .box3 { fill: #fff7ed; stroke: #ea580c; stroke-width: 2; rx: 12; }
+      .box4 { fill: #f8fafc; stroke: #64748b; stroke-width: 2; rx: 12; }
+      .store { fill: #fefce8; stroke: #ca8a04; stroke-width: 2; rx: 12; }
+      .actor { fill: #e0f2fe; stroke: #0284c7; stroke-width: 2; }
+      .line { stroke: #334155; stroke-width: 3; fill: none; marker-end: url(#arrow); }
+      .thin { stroke: #64748b; stroke-width: 2; fill: none; marker-end: url(#arrowSmall); }
+      .dash { stroke: #64748b; stroke-width: 2; fill: none; stroke-dasharray: 7 7; marker-end: url(#arrowSmall); }
+      .pill { fill: #e2e8f0; stroke: #94a3b8; stroke-width: 1.5; rx: 18; }
+    </style>
+    <marker id="arrow" markerWidth="14" markerHeight="14" refX="12" refY="7" orient="auto" markerUnits="strokeWidth">
+      <path d="M2,2 L12,7 L2,12 Z" fill="#334155"/>
+    </marker>
+    <marker id="arrowSmall" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto" markerUnits="strokeWidth">
+      <path d="M1,1 L9,5 L1,9 Z" fill="#64748b"/>
+    </marker>
+  </defs>
+
+  <rect class="bg" x="0" y="0" width="1600" height="2100"/>
+  <text class="title" x="80" y="78">CyberScan Chapter 3 Updated Diagrams</text>
+  <text class="subtitle" x="80" y="114">Local full working web-based vulnerability scanner with file-based persistence</text>
+
+  <!-- System Architecture -->
+  <rect class="card" x="60" y="155" width="1480" height="300"/>
+  <text class="section" x="92" y="205">1. System Architecture Diagram</text>
+  <rect class="box" x="130" y="255" width="250" height="90"/>
+  <text class="label" x="255" y="292" text-anchor="middle">Browser UI</text>
+  <text class="small" x="255" y="320" text-anchor="middle">prototype.html</text>
+  <path class="line" d="M380 300 H505"/>
+  <rect class="box2" x="525" y="255" width="250" height="90"/>
+  <text class="label" x="650" y="292" text-anchor="middle">Python Web App</text>
+  <text class="small" x="650" y="320" text-anchor="middle">app.py API</text>
+  <path class="line" d="M775 300 H900"/>
+  <rect class="box3" x="920" y="255" width="250" height="90"/>
+  <text class="label" x="1045" y="292" text-anchor="middle">Scanner Engine</text>
+  <text class="small" x="1045" y="320" text-anchor="middle">cyberscan.py</text>
+  <path class="line" d="M1170 300 H1295"/>
+  <rect class="store" x="1315" y="235" width="170" height="130"/>
+  <text class="label" x="1400" y="275" text-anchor="middle">File Storage</text>
+  <text class="tiny" x="1400" y="305" text-anchor="middle">history.json</text>
+  <text class="tiny" x="1400" y="328" text-anchor="middle">triage.json</text>
+  <text class="tiny" x="1400" y="351" text-anchor="middle">reports</text>
+
+  <!-- Data Flow -->
+  <rect class="card" x="60" y="495" width="1480" height="355"/>
+  <text class="section" x="92" y="545">2. Data Flow Diagram</text>
+  <rect class="box4" x="120" y="595" width="205" height="72"/>
+  <text class="label" x="222" y="626" text-anchor="middle">User Login</text>
+  <text class="tiny" x="222" y="650" text-anchor="middle">local owner access</text>
+  <path class="thin" d="M325 631 H405"/>
+  <rect class="box" x="425" y="595" width="205" height="72"/>
+  <text class="label" x="527" y="626" text-anchor="middle">Configure Scan</text>
+  <text class="tiny" x="527" y="650" text-anchor="middle">target + profile</text>
+  <path class="thin" d="M630 631 H710"/>
+  <rect class="box2" x="730" y="595" width="205" height="72"/>
+  <text class="label" x="832" y="626" text-anchor="middle">Create Job</text>
+  <text class="tiny" x="832" y="650" text-anchor="middle">queued / running</text>
+  <path class="thin" d="M935 631 H1015"/>
+  <rect class="box3" x="1035" y="595" width="205" height="72"/>
+  <text class="label" x="1137" y="626" text-anchor="middle">Run Checks</text>
+  <text class="tiny" x="1137" y="650" text-anchor="middle">OWASP aligned</text>
+  <path class="thin" d="M1240 631 H1320"/>
+  <rect class="store" x="1340" y="595" width="130" height="72"/>
+  <text class="label" x="1405" y="626" text-anchor="middle">Reports</text>
+  <text class="tiny" x="1405" y="650" text-anchor="middle">JSON CSV HTML</text>
+
+  <path class="thin" d="M1405 667 V735 H1190"/>
+  <rect class="box" x="980" y="705" width="210" height="72"/>
+  <text class="label" x="1085" y="736" text-anchor="middle">View Findings</text>
+  <text class="tiny" x="1085" y="760" text-anchor="middle">severity + evidence</text>
+  <path class="thin" d="M980 741 H900"/>
+  <rect class="box2" x="690" y="705" width="210" height="72"/>
+  <text class="label" x="795" y="736" text-anchor="middle">Triage Findings</text>
+  <text class="tiny" x="795" y="760" text-anchor="middle">FP / risk / owner</text>
+  <path class="thin" d="M690 741 H610"/>
+  <rect class="store" x="400" y="705" width="210" height="72"/>
+  <text class="label" x="505" y="736" text-anchor="middle">Save State</text>
+  <text class="tiny" x="505" y="760" text-anchor="middle">history + triage</text>
+
+  <!-- Use Case Diagram -->
+  <rect class="card" x="60" y="890" width="1480" height="430"/>
+  <text class="section" x="92" y="940">3. Use Case Diagram</text>
+  <circle class="actor" cx="160" cy="1040" r="28"/>
+  <path class="line" d="M160 1068 V1160 M110 1105 H210 M160 1160 L120 1225 M160 1160 L200 1225" marker-end="none"/>
+  <text class="label" x="160" y="1270" text-anchor="middle">Owner / Analyst</text>
+  <rect class="pill" x="320" y="980" width="210" height="50"/>
+  <text class="small" x="425" y="1012" text-anchor="middle">Login</text>
+  <rect class="pill" x="585" y="980" width="210" height="50"/>
+  <text class="small" x="690" y="1012" text-anchor="middle">Configure Scan</text>
+  <rect class="pill" x="850" y="980" width="210" height="50"/>
+  <text class="small" x="955" y="1012" text-anchor="middle">Start Scan</text>
+  <rect class="pill" x="1115" y="980" width="210" height="50"/>
+  <text class="small" x="1220" y="1012" text-anchor="middle">Cancel Scan</text>
+  <rect class="pill" x="320" y="1070" width="210" height="50"/>
+  <text class="small" x="425" y="1102" text-anchor="middle">View Scan Status</text>
+  <rect class="pill" x="585" y="1070" width="210" height="50"/>
+  <text class="small" x="690" y="1102" text-anchor="middle">View Findings</text>
+  <rect class="pill" x="850" y="1070" width="210" height="50"/>
+  <text class="small" x="955" y="1102" text-anchor="middle">Mark False Positive</text>
+  <rect class="pill" x="1115" y="1070" width="210" height="50"/>
+  <text class="small" x="1220" y="1102" text-anchor="middle">Accept Risk</text>
+  <rect class="pill" x="320" y="1160" width="210" height="50"/>
+  <text class="small" x="425" y="1192" text-anchor="middle">Owner Review</text>
+  <rect class="pill" x="585" y="1160" width="210" height="50"/>
+  <text class="small" x="690" y="1192" text-anchor="middle">Generate Report</text>
+  <rect class="pill" x="850" y="1160" width="210" height="50"/>
+  <text class="small" x="955" y="1192" text-anchor="middle">Schedule Report</text>
+  <rect class="pill" x="1115" y="1160" width="210" height="50"/>
+  <text class="small" x="1220" y="1192" text-anchor="middle">View Scan History</text>
+  <path class="dash" d="M220 1080 H315"/>
+  <path class="dash" d="M220 1080 H580"/>
+  <path class="dash" d="M220 1080 H845"/>
+  <path class="dash" d="M220 1080 H1110"/>
+  <path class="dash" d="M220 1110 H315"/>
+  <path class="dash" d="M220 1110 H580"/>
+  <path class="dash" d="M220 1110 H845"/>
+  <path class="dash" d="M220 1110 H1110"/>
+  <path class="dash" d="M220 1190 H315"/>
+  <path class="dash" d="M220 1190 H580"/>
+  <path class="dash" d="M220 1190 H845"/>
+  <path class="dash" d="M220 1190 H1110"/>
+
+  <!-- Activity Diagram -->
+  <rect class="card" x="60" y="1360" width="700" height="650"/>
+  <text class="section" x="92" y="1410">4. Scan Activity Diagram</text>
+  <circle cx="410" cy="1465" r="18" fill="#0f172a"/>
+  <path class="thin" d="M410 1483 V1515"/>
+  <rect class="box" x="270" y="1515" width="280" height="56"/>
+  <text class="small" x="410" y="1550" text-anchor="middle">Validate authorization</text>
+  <path class="thin" d="M410 1571 V1605"/>
+  <rect class="box2" x="270" y="1605" width="280" height="56"/>
+  <text class="small" x="410" y="1640" text-anchor="middle">Create background scan job</text>
+  <path class="thin" d="M410 1661 V1695"/>
+  <rect class="box3" x="270" y="1695" width="280" height="56"/>
+  <text class="small" x="410" y="1730" text-anchor="middle">Run scanner checks</text>
+  <path class="thin" d="M410 1751 V1785"/>
+  <rect class="store" x="270" y="1785" width="280" height="56"/>
+  <text class="small" x="410" y="1820" text-anchor="middle">Generate reports</text>
+  <path class="thin" d="M410 1841 V1875"/>
+  <rect class="box" x="270" y="1875" width="280" height="56"/>
+  <text class="small" x="410" y="1910" text-anchor="middle">Display findings</text>
+  <path class="thin" d="M410 1931 V1965"/>
+  <circle cx="410" cy="1985" r="18" fill="#ffffff" stroke="#0f172a" stroke-width="5"/>
+
+  <!-- File Storage Structure -->
+  <rect class="card" x="800" y="1360" width="740" height="650"/>
+  <text class="section" x="832" y="1410">5. File Storage Structure Diagram</text>
+  <rect class="store" x="910" y="1460" width="520" height="82"/>
+  <text class="label" x="1170" y="1494" text-anchor="middle">reports/</text>
+  <text class="tiny" x="1170" y="1522" text-anchor="middle">local file-based persistence folder</text>
+  <path class="thin" d="M1170 1542 V1585"/>
+  <rect class="box4" x="875" y="1585" width="250" height="58"/>
+  <text class="small" x="1000" y="1621" text-anchor="middle">history.json</text>
+  <rect class="box4" x="1215" y="1585" width="250" height="58"/>
+  <text class="small" x="1340" y="1621" text-anchor="middle">automation.json</text>
+  <rect class="box4" x="875" y="1680" width="250" height="58"/>
+  <text class="small" x="1000" y="1716" text-anchor="middle">triage.json</text>
+  <rect class="box4" x="1215" y="1680" width="250" height="58"/>
+  <text class="small" x="1340" y="1716" text-anchor="middle">scan_report.json</text>
+  <rect class="box4" x="875" y="1775" width="250" height="58"/>
+  <text class="small" x="1000" y="1811" text-anchor="middle">scan_report.csv</text>
+  <rect class="box4" x="1215" y="1775" width="250" height="58"/>
+  <text class="small" x="1340" y="1811" text-anchor="middle">scan_report.html</text>
+  <text class="small" x="1170" y="1890" text-anchor="middle">No database server required</text>
+  <text class="tiny" x="1170" y="1920" text-anchor="middle">Portable local storage for capstone demonstration and authorized testing</text>
+</svg>

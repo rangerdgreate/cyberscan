@@ -1,0 +1,17 @@
+CyberScan web app running at http://127.0.0.1:8006
+
+[+] Starting CyberScan for: http://testphp.vulnweb.com
+
+[+] Scan completed in 69.2s.
+
+[+] JSON report saved as: C:\automated scanner\reports\http-testphp-vulnweb-com_20260526_140932.json
+[+] CSV report saved as: C:\automated scanner\reports\http-testphp-vulnweb-com_20260526_140932.csv
+[+] HTML report saved as: C:\automated scanner\reports\http-testphp-vulnweb-com_20260526_140932.html
+
+[+] Starting CyberScan for: http://testphp.vulnweb.com
+
+[+] Scan completed in 68.9s.
+
+[+] JSON report saved as: C:\automated scanner\reports\http-testphp-vulnweb-com_20260526_141322.json
+[+] CSV report saved as: C:\automated scanner\reports\http-testphp-vulnweb-com_20260526_141322.csv
+[+] HTML report saved as: C:\automated scanner\reports\http-testphp-vulnweb-com_20260526_141322.html

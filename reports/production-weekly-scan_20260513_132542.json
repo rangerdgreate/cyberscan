@@ -1,0 +1,135 @@
+{
+    "scanner": {
+        "name": "CyberScan",
+        "version": "1.1.0"
+    },
+    "scan": {
+        "name": "Production Weekly Scan",
+        "type": "Full",
+        "targets": [
+            "https://api.example.com",
+            "https://www.example.com",
+            "https://admin.example.com"
+        ],
+        "tags": [
+            "depth-3",
+            "full"
+        ],
+        "settings": {
+            "max_depth": 3,
+            "include_paths": [
+                "/api/.*"
+            ],
+            "exclude_paths": [
+                "/logout|/admin"
+            ],
+            "rate_limit": 10,
+            "crawled_urls": [
+                "https://www.example.com"
+            ]
+        }
+    },
+    "target": "https://api.example.com",
+    "final_url": "https://api.example.com",
+    "scan_date": "2026-05-13T13:25:42.311243",
+    "duration_seconds": 3.97,
+    "summary": {
+        "Critical": 0,
+        "High": 2,
+        "Medium": 4,
+        "Low": 4,
+        "Info": 0
+    },
+    "affected_hosts": [
+        {
+            "host": "api.example.com",
+            "findings": 10
+        },
+        {
+            "host": "www.example.com",
+            "findings": 9
+        },
+        {
+            "host": "admin.example.com",
+            "findings": 8
+        }
+    ],
+    "category_summary": {
+        "A02: Cryptographic Failures": 2,
+        "Security Misconfiguration": 1,
+        "A05: Security Misconfiguration": 6,
+        "A03: Injection": 1
+    },
+    "findings": [
+        {
+            "title": "SSL Certificate Check Failed",
+            "severity": "Medium",
+            "owasp_category": "A02: Cryptographic Failures",
+            "description": "The scanner could not verify the SSL certificate. Error: [Errno 11001] getaddrinfo failed",
+            "recommendation": "Make sure the website has a valid SSL/TLS certificate."
+        },
+        {
+            "title": "SSL Certificate Check Failed",
+            "severity": "Medium",
+            "owasp_category": "A02: Cryptographic Failures",
+            "description": "The scanner could not verify the SSL certificate. Error: [Errno 11001] getaddrinfo failed",
+            "recommendation": "Make sure the website has a valid SSL/TLS certificate."
+        },
+        {
+            "title": "Target Unreachable",
+            "severity": "High",
+            "owasp_category": "Security Misconfiguration",
+            "description": "The scanner could not reach the target URL: https://admin.example.com",
+            "recommendation": "Check if the target URL is correct and accessible."
+        },
+        {
+            "title": "Missing Security Header: Strict-Transport-Security",
+            "severity": "Medium",
+            "owasp_category": "A05: Security Misconfiguration",
+            "description": "HSTS header is missing. This helps enforce HTTPS connections.",
+            "recommendation": "Add Strict-Transport-Security header."
+        },
+        {
+            "title": "Missing Security Header: Content-Security-Policy",
+            "severity": "High",
+            "owasp_category": "A03: Injection",
+            "description": "Content Security Policy is missing. This may increase XSS risk.",
+            "recommendation": "Add a strong Content-Security-Policy header."
+        },
+        {
+            "title": "Missing Security Header: X-Frame-Options",
+            "severity": "Medium",
+            "owasp_category": "A05: Security Misconfiguration",
+            "description": "X-Frame-Options header is missing. The site may be vulnerable to clickjacking.",
+            "recommendation": "Add X-Frame-Options: DENY or SAMEORIGIN."
+        },
+        {
+            "title": "Missing Security Header: X-Content-Type-Options",
+            "severity": "Low",
+            "owasp_category": "A05: Security Misconfiguration",
+            "description": "X-Content-Type-Options header is missing.",
+            "recommendation": "Add X-Content-Type-Options: nosniff."
+        },
+        {
+            "title": "Missing Security Header: Referrer-Policy",
+            "severity": "Low",
+            "owasp_category": "A05: Security Misconfiguration",
+            "description": "Referrer-Policy header is missing.",
+            "recommendation": "Add Referrer-Policy: no-referrer or strict-origin-when-cross-origin."
+        },
+        {
+            "title": "Missing Security Header: Permissions-Policy",
+            "severity": "Low",
+            "owasp_category": "A05: Security Misconfiguration",
+            "description": "Permissions-Policy header is missing.",
+            "recommendation": "Add Permissions-Policy to limit browser feature access."
+        },
+        {
+            "title": "Information Disclosure in Header: Server",
+            "severity": "Low",
+            "owasp_category": "A05: Security Misconfiguration",
+            "description": "The response exposes server technology information: Server: cloudflare",
+            "recommendation": "Remove or minimize technology/version information from HTTP response headers."
+        }
+    ]
+}

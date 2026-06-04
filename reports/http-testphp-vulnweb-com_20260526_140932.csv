@@ -1,0 +1,3 @@
+Title,Severity,OWASP Category,CWE,Confidence,Affected URL,Status Code,Lifecycle Status,Validation Status,Evidence,Description,Recommendation
+Website Does Not Use HTTPS,High,A02: Cryptographic Failures,CWE-319,High,http://testphp.vulnweb.com,,New,Observed,The target website is using HTTP instead of HTTPS.,The target website is using HTTP instead of HTTPS.,Use HTTPS with a valid TLS/SSL certificate.
+Target Unreachable,High,Security Misconfiguration,CWE-N/A,Medium,http://testphp.vulnweb.com,,New,Needs Manual Validation,The scanner could not reach the target URL: http://testphp.vulnweb.com,The scanner could not reach the target URL: http://testphp.vulnweb.com,Check if the target URL is correct and accessible.

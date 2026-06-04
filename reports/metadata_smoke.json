@@ -1,0 +1,307 @@
+{
+    "scanner": {
+        "name": "CyberScan",
+        "version": "1.2.0"
+    },
+    "scan": {
+        "name": "Scan - 127.0.0.1:8006",
+        "type": "Quick",
+        "targets": [
+            "http://127.0.0.1:8006"
+        ],
+        "tags": [],
+        "profile": {
+            "description": "Short baseline scan for the supplied targets.",
+            "modules": [
+                "TLS and HTTPS checks",
+                "Security header review",
+                "Cookie flag inspection",
+                "Known exposure paths"
+            ],
+            "safe_probe_limit": 6
+        },
+        "settings": {
+            "max_depth": 1,
+            "include_paths": [],
+            "exclude_paths": [],
+            "rate_limit": 20,
+            "max_pages": 2,
+            "crawled_urls": [
+                "http://127.0.0.1:8006"
+            ]
+        }
+    },
+    "target": "http://127.0.0.1:8006",
+    "final_url": "http://127.0.0.1:8006/",
+    "scan_date": "2026-05-18T20:42:14.951657",
+    "duration_seconds": 2.53,
+    "summary": {
+        "Critical": 0,
+        "High": 3,
+        "Medium": 7,
+        "Low": 6,
+        "Info": 1
+    },
+    "affected_hosts": [
+        {
+            "host": "www.127.0.0.1:8006",
+            "findings": 17
+        },
+        {
+            "host": "127.0.0.1:8006",
+            "findings": 16
+        }
+    ],
+    "category_summary": {
+        "A02: Cryptographic Failures": 2,
+        "A05: Security Misconfiguration": 7,
+        "A03: Injection": 4,
+        "A07: Identification and Authentication Failures": 4
+    },
+    "cwe_summary": {
+        "CWE-319": 2,
+        "CWE-693": 4,
+        "CWE-79": 3,
+        "CWE-1021": 1,
+        "CWE-200": 1,
+        "CWE-N/A": 4,
+        "CWE-209": 1,
+        "CWE-89": 1
+    },
+    "confidence_summary": {
+        "High": 12,
+        "Medium": 4,
+        "Low": 1
+    },
+    "discovery_sources": [],
+    "robots_policies": [],
+    "comparison": {
+        "new": 0,
+        "existing": 0,
+        "fixed": 0,
+        "fixed_findings": []
+    },
+    "findings": [
+        {
+            "title": "Website Does Not Use HTTPS",
+            "severity": "High",
+            "owasp_category": "A02: Cryptographic Failures",
+            "cwe": "CWE-319",
+            "confidence": "High",
+            "validation_status": "Observed",
+            "description": "The target website is using HTTP instead of HTTPS.",
+            "recommendation": "Use HTTPS with a valid TLS/SSL certificate.",
+            "affected_url": "http://127.0.0.1:8006",
+            "evidence": "The target website is using HTTP instead of HTTPS.",
+            "status_code": null
+        },
+        {
+            "title": "Missing Security Header: Strict-Transport-Security",
+            "severity": "Medium",
+            "owasp_category": "A05: Security Misconfiguration",
+            "cwe": "CWE-693",
+            "confidence": "High",
+            "validation_status": "Observed",
+            "description": "HSTS header is missing. This helps enforce HTTPS connections.",
+            "recommendation": "Add Strict-Transport-Security header.",
+            "affected_url": "http://127.0.0.1:8006",
+            "evidence": "HSTS header is missing. This helps enforce HTTPS connections.",
+            "status_code": null
+        },
+        {
+            "title": "Missing Security Header: Content-Security-Policy",
+            "severity": "High",
+            "owasp_category": "A03: Injection",
+            "cwe": "CWE-79",
+            "confidence": "High",
+            "validation_status": "Observed",
+            "description": "Content Security Policy is missing. This may increase XSS risk.",
+            "recommendation": "Add a strong Content-Security-Policy header.",
+            "affected_url": "http://127.0.0.1:8006",
+            "evidence": "Content Security Policy is missing. This may increase XSS risk.",
+            "status_code": null
+        },
+        {
+            "title": "Missing Security Header: X-Frame-Options",
+            "severity": "Medium",
+            "owasp_category": "A05: Security Misconfiguration",
+            "cwe": "CWE-1021",
+            "confidence": "High",
+            "validation_status": "Observed",
+            "description": "X-Frame-Options header is missing. The site may be vulnerable to clickjacking.",
+            "recommendation": "Add X-Frame-Options: DENY or SAMEORIGIN.",
+            "affected_url": "http://127.0.0.1:8006",
+            "evidence": "X-Frame-Options header is missing. The site may be vulnerable to clickjacking.",
+            "status_code": null
+        },
+        {
+            "title": "Missing Security Header: X-Content-Type-Options",
+            "severity": "Low",
+            "owasp_category": "A05: Security Misconfiguration",
+            "cwe": "CWE-693",
+            "confidence": "High",
+            "validation_status": "Observed",
+            "description": "X-Content-Type-Options header is missing.",
+            "recommendation": "Add X-Content-Type-Options: nosniff.",
+            "affected_url": "http://127.0.0.1:8006",
+            "evidence": "X-Content-Type-Options header is missing.",
+            "status_code": null
+        },
+        {
+            "title": "Missing Security Header: Referrer-Policy",
+            "severity": "Low",
+            "owasp_category": "A05: Security Misconfiguration",
+            "cwe": "CWE-693",
+            "confidence": "High",
+            "validation_status": "Observed",
+            "description": "Referrer-Policy header is missing.",
+            "recommendation": "Add Referrer-Policy: no-referrer or strict-origin-when-cross-origin.",
+            "affected_url": "http://127.0.0.1:8006",
+            "evidence": "Referrer-Policy header is missing.",
+            "status_code": null
+        },
+        {
+            "title": "Missing Security Header: Permissions-Policy",
+            "severity": "Low",
+            "owasp_category": "A05: Security Misconfiguration",
+            "cwe": "CWE-693",
+            "confidence": "High",
+            "validation_status": "Observed",
+            "description": "Permissions-Policy header is missing.",
+            "recommendation": "Add Permissions-Policy to limit browser feature access.",
+            "affected_url": "http://127.0.0.1:8006",
+            "evidence": "Permissions-Policy header is missing.",
+            "status_code": null
+        },
+        {
+            "title": "Information Disclosure in Header: Server",
+            "severity": "Low",
+            "owasp_category": "A05: Security Misconfiguration",
+            "cwe": "CWE-200",
+            "confidence": "High",
+            "validation_status": "Observed",
+            "description": "The response exposes server technology information: Server: CyberScanWeb/1.0 Python/3.13.2",
+            "recommendation": "Remove or minimize technology/version information from HTTP response headers.",
+            "affected_url": "http://127.0.0.1:8006/",
+            "evidence": "Server: CyberScanWeb/1.0 Python/3.13.2",
+            "status_code": 200
+        },
+        {
+            "title": "Form Uses GET Method: Form #1",
+            "severity": "Medium",
+            "owasp_category": "A02: Cryptographic Failures",
+            "cwe": "CWE-N/A",
+            "confidence": "High",
+            "validation_status": "Observed",
+            "description": "A form uses the GET method. Sensitive data may appear in URLs.",
+            "recommendation": "Use POST for forms that send sensitive information.",
+            "affected_url": "http://127.0.0.1:8006/",
+            "evidence": "method=get action=http://127.0.0.1:8006/",
+            "status_code": 200
+        },
+        {
+            "title": "Password Form Without HTTPS: Form #1",
+            "severity": "High",
+            "owasp_category": "A07: Identification and Authentication Failures",
+            "cwe": "CWE-319",
+            "confidence": "High",
+            "validation_status": "Observed",
+            "description": "A password field was found on a non-HTTPS page.",
+            "recommendation": "Always use HTTPS for login and password forms.",
+            "affected_url": "http://127.0.0.1:8006/",
+            "evidence": "1 password field(s) found",
+            "status_code": 200
+        },
+        {
+            "title": "Sensitive Input Allows Browser Autocomplete: Form #1",
+            "severity": "Low",
+            "owasp_category": "A07: Identification and Authentication Failures",
+            "cwe": "CWE-N/A",
+            "confidence": "High",
+            "validation_status": "Observed",
+            "description": "The input 'password' may allow browser autocomplete for sensitive data.",
+            "recommendation": "Disable autocomplete for sensitive inputs or use context-appropriate autocomplete values.",
+            "affected_url": "http://127.0.0.1:8006/",
+            "evidence": "input=password autocomplete=not set",
+            "status_code": 200
+        },
+        {
+            "title": "Possible Error Message Disclosure",
+            "severity": "Medium",
+            "owasp_category": "A05: Security Misconfiguration",
+            "cwe": "CWE-209",
+            "confidence": "Medium",
+            "validation_status": "Needs Manual Validation",
+            "description": "The page contains possible technical error text: stack trace",
+            "recommendation": "Disable detailed error messages in production.",
+            "affected_url": "http://127.0.0.1:8006/",
+            "evidence": "stack trace",
+            "status_code": 200
+        },
+        {
+            "title": "SQL Injection Review Candidate: Form #1",
+            "severity": "Medium",
+            "owasp_category": "A03: Injection",
+            "cwe": "CWE-89",
+            "confidence": "Medium",
+            "validation_status": "Needs Manual Validation",
+            "description": "The form contains fields commonly connected to database lookup or authentication logic.",
+            "recommendation": "Validate input server-side and use parameterized queries for all database access.",
+            "affected_url": "http://127.0.0.1:8006/",
+            "evidence": "Fields: email",
+            "status_code": 200
+        },
+        {
+            "title": "Possible DOM XSS Source-to-Sink Pattern",
+            "severity": "Medium",
+            "owasp_category": "A03: Injection",
+            "cwe": "CWE-79",
+            "confidence": "Medium",
+            "validation_status": "Needs Manual Validation",
+            "description": "Inline JavaScript appears to read browser-controlled input and write to risky HTML/script sinks.",
+            "recommendation": "Use safe DOM APIs such as textContent, sanitize HTML with a proven sanitizer, and avoid eval-like execution.",
+            "affected_url": "http://127.0.0.1:8006/",
+            "evidence": "Sources: location.hash; sinks: innerHTML, insertAdjacentHTML, setTimeout(, setInterval(",
+            "status_code": 200
+        },
+        {
+            "title": "Stored XSS Review Candidate",
+            "severity": "Medium",
+            "owasp_category": "A03: Injection",
+            "cwe": "CWE-79",
+            "confidence": "Medium",
+            "validation_status": "Needs Manual Validation",
+            "description": "The page contains user-content style inputs that may later be rendered back to other users.",
+            "recommendation": "HTML-encode stored user content by output context, sanitize rich text, and add regression tests for stored XSS.",
+            "affected_url": "http://127.0.0.1:8006/",
+            "evidence": "Fields: scanname",
+            "status_code": 200
+        },
+        {
+            "title": "Password Field Missing Explicit Autocomplete Context",
+            "severity": "Low",
+            "owasp_category": "A07: Identification and Authentication Failures",
+            "cwe": "CWE-N/A",
+            "confidence": "High",
+            "validation_status": "Observed",
+            "description": "A password input does not declare current-password or new-password autocomplete context.",
+            "recommendation": "Use autocomplete=current-password for login forms and autocomplete=new-password for registration or reset forms.",
+            "affected_url": "http://127.0.0.1:8006/",
+            "evidence": "autocomplete values: not set",
+            "status_code": 200
+        },
+        {
+            "title": "Client-Side Authentication Surface Detected",
+            "severity": "Info",
+            "owasp_category": "A07: Identification and Authentication Failures",
+            "cwe": "CWE-N/A",
+            "confidence": "Low",
+            "validation_status": "Informational",
+            "description": "The page or bundled script references authentication tokens, login, registration, or password flows.",
+            "recommendation": "Review token storage, password reset protections, lockout/rate limiting, and session expiration server-side.",
+            "affected_url": "http://127.0.0.1:8006/",
+            "evidence": "Matched terms: localStorage.setItem, Authorization, Bearer , /login",
+            "status_code": 200
+        }
+    ]
+}

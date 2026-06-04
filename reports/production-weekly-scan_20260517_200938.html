@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CyberScan Report</title>
+  <style>
+    :root {
+      --bg: #081018;
+      --surface: #101928;
+      --panel: #141f2f;
+      --line: #24364d;
+      --text: #e6eef9;
+      --muted: #8ea3ba;
+      --blue: #28b1ff;
+      --amber: #f59e0b;
+      --red: #ef4444;
+      --orange: #f97316;
+      --green: #22c55e;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: "Bahnschrift", "Segoe UI Variable", "Aptos", "Segoe UI", Arial, sans-serif;
+      background: radial-gradient(circle at top right, rgba(40,177,255,.14), transparent 24%), var(--bg);
+      color: var(--text);
+    }
+    .page {
+      max-width: 1440px;
+      margin: 0 auto;
+      padding: 28px;
+    }
+    .hero {
+      background: linear-gradient(180deg, rgba(20,31,47,.95), rgba(13,21,33,.95));
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 28px;
+      margin-bottom: 18px;
+      box-shadow: 0 24px 70px rgba(0,0,0,.35);
+    }
+    .hero h1 { margin: 0 0 6px; font-size: 30px; }
+    .hero p { margin: 0; color: var(--muted); }
+    .meta {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 14px;
+      margin-top: 22px;
+    }
+    .card {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      padding: 16px;
+    }
+    .card span {
+      display: block;
+      color: var(--muted);
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: .04em;
+      margin-bottom: 8px;
+    }
+    .card strong {
+      font-size: 28px;
+      display: block;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: 2fr 1fr;
+      gap: 18px;
+      margin-bottom: 18px;
+    }
+    .panel {
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 20px;
+    }
+    .panel h2 {
+      margin: 0 0 14px;
+      font-size: 18px;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+    th, td {
+      text-align: left;
+      padding: 12px 10px;
+      border-bottom: 1px solid var(--line);
+      vertical-align: top;
+      font-size: 13px;
+    }
+    th {
+      color: #9fb2c7;
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: .05em;
+    }
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      padding: 4px 9px;
+      border-radius: 999px;
+      font-size: 11px;
+      font-weight: 700;
+    }
+    .badge.critical { background: #4b1720; color: #ffd4d8; }
+    .badge.high { background: #4a2607; color: #ffd7a3; }
+    .badge.med { background: #3f3208; color: #ffe184; }
+    .badge.low { background: #142d45; color: #9bd8ff; }
+    .badge.info { background: #102433; color: #9ce2ff; }
+    .list {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+    .list li {
+      display: flex;
+      justify-content: space-between;
+      padding: 12px 0;
+      border-bottom: 1px solid var(--line);
+    }
+    .empty {
+      text-align: center;
+      color: var(--muted);
+      padding: 36px 12px;
+    }
+    .note {
+      margin-top: 18px;
+      color: var(--muted);
+      font-size: 12px;
+    }
+  </style>
+</head>
+<body>
+  <main class="page">
+    <section class="hero">
+      <h1>CyberScan Report</h1>
+      <p>Automated OWASP Top 10-aligned web vulnerability scan results for authorized testing.</p>
+      <div class="meta">
+        <div class="card"><span>Scan Name</span><strong>Production Weekly Scan</strong></div>
+        <div class="card"><span>Scan Type</span><strong>Authenticated</strong></div>
+        <div class="card"><span>Target</span><strong>https://api.example.com</strong></div>
+        <div class="card"><span>Final URL</span><strong>https://api.example.com</strong></div>
+        <div class="card"><span>Findings</span><strong>10</strong></div>
+        <div class="card"><span>Duration</span><strong>4.3s</strong></div>
+      </div>
+    </section>
+
+    <section class="grid">
+      <div class="panel">
+        <h2>Findings</h2>
+        <table>
+          <thead>
+            <tr>
+              <th>Severity</th>
+              <th>Title</th>
+              <th>OWASP Category</th>
+              <th>Affected URL</th>
+              <th>Evidence</th>
+              <th>Description</th>
+              <th>Recommendation</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td><span class='badge med'>Medium</span></td><td>SSL Certificate Check Failed</td><td>A02: Cryptographic Failures</td><td>https://api.example.com</td><td>The scanner could not verify the SSL certificate. Error: [Errno 11001] getaddrinfo failed</td><td>The scanner could not verify the SSL certificate. Error: [Errno 11001] getaddrinfo failed</td><td>Make sure the website has a valid SSL/TLS certificate.</td></tr><tr><td><span class='badge med'>Medium</span></td><td>SSL Certificate Check Failed</td><td>A02: Cryptographic Failures</td><td>https://admin.example.com</td><td>The scanner could not verify the SSL certificate. Error: [Errno 11001] getaddrinfo failed</td><td>The scanner could not verify the SSL certificate. Error: [Errno 11001] getaddrinfo failed</td><td>Make sure the website has a valid SSL/TLS certificate.</td></tr><tr><td><span class='badge high'>High</span></td><td>Target Unreachable</td><td>Security Misconfiguration</td><td>https://admin.example.com</td><td>The scanner could not reach the target URL: https://admin.example.com</td><td>The scanner could not reach the target URL: https://admin.example.com</td><td>Check if the target URL is correct and accessible.</td></tr><tr><td><span class='badge med'>Medium</span></td><td>Missing Security Header: Strict-Transport-Security</td><td>A05: Security Misconfiguration</td><td>https://www.example.com</td><td>HSTS header is missing. This helps enforce HTTPS connections.</td><td>HSTS header is missing. This helps enforce HTTPS connections.</td><td>Add Strict-Transport-Security header.</td></tr><tr><td><span class='badge high'>High</span></td><td>Missing Security Header: Content-Security-Policy</td><td>A03: Injection</td><td>https://www.example.com</td><td>Content Security Policy is missing. This may increase XSS risk.</td><td>Content Security Policy is missing. This may increase XSS risk.</td><td>Add a strong Content-Security-Policy header.</td></tr><tr><td><span class='badge med'>Medium</span></td><td>Missing Security Header: X-Frame-Options</td><td>A05: Security Misconfiguration</td><td>https://www.example.com</td><td>X-Frame-Options header is missing. The site may be vulnerable to clickjacking.</td><td>X-Frame-Options header is missing. The site may be vulnerable to clickjacking.</td><td>Add X-Frame-Options: DENY or SAMEORIGIN.</td></tr><tr><td><span class='badge low'>Low</span></td><td>Missing Security Header: X-Content-Type-Options</td><td>A05: Security Misconfiguration</td><td>https://www.example.com</td><td>X-Content-Type-Options header is missing.</td><td>X-Content-Type-Options header is missing.</td><td>Add X-Content-Type-Options: nosniff.</td></tr><tr><td><span class='badge low'>Low</span></td><td>Missing Security Header: Referrer-Policy</td><td>A05: Security Misconfiguration</td><td>https://www.example.com</td><td>Referrer-Policy header is missing.</td><td>Referrer-Policy header is missing.</td><td>Add Referrer-Policy: no-referrer or strict-origin-when-cross-origin.</td></tr><tr><td><span class='badge low'>Low</span></td><td>Missing Security Header: Permissions-Policy</td><td>A05: Security Misconfiguration</td><td>https://www.example.com</td><td>Permissions-Policy header is missing.</td><td>Permissions-Policy header is missing.</td><td>Add Permissions-Policy to limit browser feature access.</td></tr><tr><td><span class='badge low'>Low</span></td><td>Information Disclosure in Header: Server</td><td>A05: Security Misconfiguration</td><td>https://www.example.com/</td><td>Server: cloudflare</td><td>The response exposes server technology information: Server: cloudflare</td><td>Remove or minimize technology/version information from HTTP response headers.</td></tr>
+          </tbody>
+        </table>
+      </div>
+        <div class="panel">
+        <h2>Severity Summary</h2>
+        <ul class="list">
+          <li><span>Critical</span><strong>0</strong></li>
+          <li><span>High</span><strong>2</strong></li>
+          <li><span>Medium</span><strong>4</strong></li>
+          <li><span>Low</span><strong>4</strong></li>
+          <li><span>Info</span><strong>0</strong></li>
+        </ul>
+
+        <h2 style="margin-top:18px;">Affected Hosts</h2>
+        <ul class="list">
+          <li><span>api.example.com</span><strong>10</strong></li><li><span>www.example.com</span><strong>9</strong></li><li><span>admin.example.com</span><strong>8</strong></li>
+        </ul>
+
+        <h2 style="margin-top:18px;">OWASP Coverage</h2>
+        <ul class="list">
+          <li><span>A02: Cryptographic Failures</span><strong>2</strong></li><li><span>Security Misconfiguration</span><strong>1</strong></li><li><span>A05: Security Misconfiguration</span><strong>6</strong></li><li><span>A03: Injection</span><strong>1</strong></li>
+        </ul>
+      </div>
+    </section>
+
+    <p class="note">This report is intended for authorized security testing only. It does not perform destructive actions or exploit validation.</p>
+  </main>
+</body>
+</html>

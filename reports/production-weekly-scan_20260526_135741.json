@@ -1,0 +1,255 @@
+{
+    "scanner": {
+        "name": "CyberScan",
+        "version": "1.2.0"
+    },
+    "scan": {
+        "name": "Production Weekly Scan",
+        "type": "Quick",
+        "targets": [
+            "https://api.example.com",
+            "https://www.example.com",
+            "https://admin.example.com"
+        ],
+        "tags": [
+            "depth-3",
+            "quick"
+        ],
+        "profile": {
+            "description": "Short baseline scan for the supplied targets.",
+            "modules": [
+                "TLS and HTTPS checks",
+                "Security header review",
+                "Cookie flag inspection",
+                "Known exposure paths"
+            ],
+            "safe_probe_limit": 6
+        },
+        "settings": {
+            "max_depth": 3,
+            "include_paths": [],
+            "exclude_paths": [
+                "/logout|/signout"
+            ],
+            "rate_limit": 10,
+            "max_pages": 25,
+            "crawled_urls": [
+                "https://www.example.com"
+            ]
+        }
+    },
+    "target": "https://api.example.com",
+    "final_url": "https://api.example.com",
+    "scan_date": "2026-05-26T13:57:41.527644",
+    "duration_seconds": 9.76,
+    "summary": {
+        "Critical": 0,
+        "High": 2,
+        "Medium": 4,
+        "Low": 4,
+        "Info": 0
+    },
+    "affected_hosts": [
+        {
+            "host": "api.example.com",
+            "findings": 10
+        },
+        {
+            "host": "www.example.com",
+            "findings": 9
+        },
+        {
+            "host": "admin.example.com",
+            "findings": 8
+        }
+    ],
+    "category_summary": {
+        "A02: Cryptographic Failures": 2,
+        "Security Misconfiguration": 1,
+        "A05: Security Misconfiguration": 6,
+        "A03: Injection": 1
+    },
+    "cwe_summary": {
+        "CWE-295": 2,
+        "CWE-N/A": 1,
+        "CWE-319": 1,
+        "CWE-79": 1,
+        "CWE-1021": 1,
+        "CWE-693": 3,
+        "CWE-200": 1
+    },
+    "confidence_summary": {
+        "Medium": 3,
+        "High": 7
+    },
+    "discovery_sources": [],
+    "robots_policies": [],
+    "comparison": {
+        "new": 0,
+        "existing": 10,
+        "fixed": 0,
+        "fixed_findings": []
+    },
+    "findings": [
+        {
+            "title": "SSL Certificate Check Failed",
+            "severity": "Medium",
+            "owasp_category": "A02: Cryptographic Failures",
+            "cwe": "CWE-295",
+            "confidence": "Medium",
+            "validation_status": "Needs Manual Validation",
+            "description": "The scanner could not verify the SSL certificate. Error: [Errno 11001] getaddrinfo failed",
+            "recommendation": "Make sure the website has a valid SSL/TLS certificate.",
+            "affected_url": "https://api.example.com",
+            "evidence": "The scanner could not verify the SSL certificate. Error: [Errno 11001] getaddrinfo failed",
+            "status_code": null,
+            "detector": "CyberScan",
+            "lifecycle_status": "Existing",
+            "fingerprint": "ssl certificate check failed|medium|a02: cryptographic failures|cwe-295|https://api.example.com"
+        },
+        {
+            "title": "SSL Certificate Check Failed",
+            "severity": "Medium",
+            "owasp_category": "A02: Cryptographic Failures",
+            "cwe": "CWE-295",
+            "confidence": "Medium",
+            "validation_status": "Needs Manual Validation",
+            "description": "The scanner could not verify the SSL certificate. Error: [Errno 11001] getaddrinfo failed",
+            "recommendation": "Make sure the website has a valid SSL/TLS certificate.",
+            "affected_url": "https://admin.example.com",
+            "evidence": "The scanner could not verify the SSL certificate. Error: [Errno 11001] getaddrinfo failed",
+            "status_code": null,
+            "detector": "CyberScan",
+            "lifecycle_status": "Existing",
+            "fingerprint": "ssl certificate check failed|medium|a02: cryptographic failures|cwe-295|https://admin.example.com"
+        },
+        {
+            "title": "Target Unreachable",
+            "severity": "High",
+            "owasp_category": "Security Misconfiguration",
+            "cwe": "CWE-N/A",
+            "confidence": "Medium",
+            "validation_status": "Needs Manual Validation",
+            "description": "The scanner could not reach the target URL: https://admin.example.com",
+            "recommendation": "Check if the target URL is correct and accessible.",
+            "affected_url": "https://admin.example.com",
+            "evidence": "The scanner could not reach the target URL: https://admin.example.com",
+            "status_code": null,
+            "detector": "CyberScan",
+            "lifecycle_status": "Existing",
+            "fingerprint": "target unreachable|high|security misconfiguration|cwe-n/a|https://admin.example.com"
+        },
+        {
+            "title": "Missing Security Header: Strict-Transport-Security",
+            "severity": "Medium",
+            "owasp_category": "A05: Security Misconfiguration",
+            "cwe": "CWE-319",
+            "confidence": "High",
+            "validation_status": "Observed",
+            "description": "HSTS header is missing. This helps enforce HTTPS connections.",
+            "recommendation": "Add Strict-Transport-Security header.",
+            "affected_url": "https://www.example.com",
+            "evidence": "HSTS header is missing. This helps enforce HTTPS connections.",
+            "status_code": null,
+            "detector": "CyberScan",
+            "lifecycle_status": "Existing",
+            "fingerprint": "missing security header: strict-transport-security|medium|a05: security misconfiguration|cwe-319|https://www.example.com"
+        },
+        {
+            "title": "Missing Security Header: Content-Security-Policy",
+            "severity": "High",
+            "owasp_category": "A03: Injection",
+            "cwe": "CWE-79",
+            "confidence": "High",
+            "validation_status": "Observed",
+            "description": "Content Security Policy is missing. This may increase XSS risk.",
+            "recommendation": "Add a strong Content-Security-Policy header.",
+            "affected_url": "https://www.example.com",
+            "evidence": "Content Security Policy is missing. This may increase XSS risk.",
+            "status_code": null,
+            "detector": "CyberScan",
+            "lifecycle_status": "Existing",
+            "fingerprint": "missing security header: content-security-policy|high|a03: injection|cwe-79|https://www.example.com"
+        },
+        {
+            "title": "Missing Security Header: X-Frame-Options",
+            "severity": "Medium",
+            "owasp_category": "A05: Security Misconfiguration",
+            "cwe": "CWE-1021",
+            "confidence": "High",
+            "validation_status": "Observed",
+            "description": "X-Frame-Options header is missing. The site may be vulnerable to clickjacking.",
+            "recommendation": "Add X-Frame-Options: DENY or SAMEORIGIN.",
+            "affected_url": "https://www.example.com",
+            "evidence": "X-Frame-Options header is missing. The site may be vulnerable to clickjacking.",
+            "status_code": null,
+            "detector": "CyberScan",
+            "lifecycle_status": "Existing",
+            "fingerprint": "missing security header: x-frame-options|medium|a05: security misconfiguration|cwe-1021|https://www.example.com"
+        },
+        {
+            "title": "Missing Security Header: X-Content-Type-Options",
+            "severity": "Low",
+            "owasp_category": "A05: Security Misconfiguration",
+            "cwe": "CWE-693",
+            "confidence": "High",
+            "validation_status": "Observed",
+            "description": "X-Content-Type-Options header is missing.",
+            "recommendation": "Add X-Content-Type-Options: nosniff.",
+            "affected_url": "https://www.example.com",
+            "evidence": "X-Content-Type-Options header is missing.",
+            "status_code": null,
+            "detector": "CyberScan",
+            "lifecycle_status": "Existing",
+            "fingerprint": "missing security header: x-content-type-options|low|a05: security misconfiguration|cwe-693|https://www.example.com"
+        },
+        {
+            "title": "Missing Security Header: Referrer-Policy",
+            "severity": "Low",
+            "owasp_category": "A05: Security Misconfiguration",
+            "cwe": "CWE-693",
+            "confidence": "High",
+            "validation_status": "Observed",
+            "description": "Referrer-Policy header is missing.",
+            "recommendation": "Add Referrer-Policy: no-referrer or strict-origin-when-cross-origin.",
+            "affected_url": "https://www.example.com",
+            "evidence": "Referrer-Policy header is missing.",
+            "status_code": null,
+            "detector": "CyberScan",
+            "lifecycle_status": "Existing",
+            "fingerprint": "missing security header: referrer-policy|low|a05: security misconfiguration|cwe-693|https://www.example.com"
+        },
+        {
+            "title": "Missing Security Header: Permissions-Policy",
+            "severity": "Low",
+            "owasp_category": "A05: Security Misconfiguration",
+            "cwe": "CWE-693",
+            "confidence": "High",
+            "validation_status": "Observed",
+            "description": "Permissions-Policy header is missing.",
+            "recommendation": "Add Permissions-Policy to limit browser feature access.",
+            "affected_url": "https://www.example.com",
+            "evidence": "Permissions-Policy header is missing.",
+            "status_code": null,
+            "detector": "CyberScan",
+            "lifecycle_status": "Existing",
+            "fingerprint": "missing security header: permissions-policy|low|a05: security misconfiguration|cwe-693|https://www.example.com"
+        },
+        {
+            "title": "Information Disclosure in Header: Server",
+            "severity": "Low",
+            "owasp_category": "A05: Security Misconfiguration",
+            "cwe": "CWE-200",
+            "confidence": "High",
+            "validation_status": "Observed",
+            "description": "The response exposes server technology information: Server: cloudflare",
+            "recommendation": "Remove or minimize technology/version information from HTTP response headers.",
+            "affected_url": "https://www.example.com/",
+            "evidence": "Server: cloudflare",
+            "status_code": 200,
+            "detector": "CyberScan",
+            "lifecycle_status": "Existing",
+            "fingerprint": "information disclosure in header: server|low|a05: security misconfiguration|cwe-200|https://www.example.com/"
+        }
+    ]
+}

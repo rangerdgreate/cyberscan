@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Developer Handoff - CyberScan Report</title>
+  <style>
+    body { margin: 0; font-family: Arial, sans-serif; color: #172033; background: #f5f7fb; }
+    main { max-width: 1040px; margin: 0 auto; padding: 34px 24px; }
+    h1 { margin: 0 0 8px; }
+    .meta { color: #56657d; margin: 0 0 24px; }
+    .cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 12px; margin: 22px 0; }
+    .cards div, section { background: white; border: 1px solid #dbe3ef; border-radius: 8px; padding: 18px; }
+    .cards span { display: block; color: #66758d; font-size: 13px; }
+    .cards strong { font-size: 26px; }
+    table { width: 100%; border-collapse: collapse; background: white; }
+    th, td { padding: 12px; border-bottom: 1px solid #e6ecf5; text-align: left; vertical-align: top; }
+    th { background: #edf3fb; }
+    .prevention-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px; }
+    .prevention-grid article { border: 1px solid #dbe3ef; border-radius: 8px; padding: 16px; background: white; }
+    .prevention-grid p { color: #334155; }
+    .prevention-grid small { color: #66758d; }
+  </style>
+</head>
+<body>
+  <main>
+    <h1>Developer Handoff</h1>
+    <p class="meta">Generated 2026-06-04T19:13:37 by scheduled automation for https://nexuslogixx.com</p>
+    <section>
+      <h2>Scan Context</h2>
+      <p><strong>justin</strong></p>
+      <p>Technical details and remediation steps</p>
+    </section>
+    <div class="cards"><div><span>Critical</span><strong>0</strong></div><div><span>High</span><strong>2</strong></div><div><span>Medium</span><strong>42</strong></div><div><span>Low</span><strong>15</strong></div><div><span>Info</span><strong>15</strong></div></div>
+    <section>
+      <h2>Findings and Remediation</h2>
+      <table>
+        <thead><tr><th>Severity</th><th>Finding</th><th>Category</th><th>CWE</th><th>Confidence</th><th>Recommendation</th></tr></thead>
+        <tbody><tr><td>Medium</td><td>Missing Security Header: Strict-Transport-Security</td><td>A05: Security Misconfiguration</td><td>CWE-319</td><td>High</td><td>Add Strict-Transport-Security header.</td></tr><tr><td>Medium</td><td>Weak Content Security Policy</td><td>A03: Injection</td><td>CWE-79</td><td>High</td><td>Tighten CSP directives and avoid unsafe inline script, unsafe eval, broad wildcards, and unnecessary data sources.</td></tr><tr><td>Low</td><td>Information Disclosure in Header: Server</td><td>A05: Security Misconfiguration</td><td>CWE-200</td><td>High</td><td>Remove or minimize technology/version information from HTTP response headers.</td></tr><tr><td>Medium</td><td>Form Uses GET Method: Form #1</td><td>A02: Cryptographic Failures</td><td>CWE-598</td><td>High</td><td>Use POST for forms that send sensitive information.</td></tr><tr><td>Info</td><td>Detected Frontend Library: jquery 3.7.1</td><td>A06: Vulnerable and Outdated Components</td><td>CWE-1104</td><td>Low</td><td>Check if this library version has known vulnerabilities and update if needed.</td></tr><tr><td>Info</td><td>Interesting API Routes Exposed in Client Bundle</td><td>A01: Broken Access Control</td><td>CWE-284</td><td>Low</td><td>Verify server-side authorization on every API route; do not rely on hidden frontend routes for access control.</td></tr><tr><td>Info</td><td>Interesting API Routes Exposed in Client Bundle</td><td>A01: Broken Access Control</td><td>CWE-284</td><td>Low</td><td>Verify server-side authorization on every API route; do not rely on hidden frontend routes for access control.</td></tr><tr><td>Medium</td><td>Missing Security Header: Strict-Transport-Security</td><td>A05: Security Misconfiguration</td><td>CWE-319</td><td>High</td><td>Add Strict-Transport-Security header.</td></tr><tr><td>Medium</td><td>Weak Content Security Policy</td><td>A03: Injection</td><td>CWE-79</td><td>High</td><td>Tighten CSP directives and avoid unsafe inline script, unsafe eval, broad wildcards, and unnecessary data sources.</td></tr><tr><td>Low</td><td>Information Disclosure in Header: Server</td><td>A05: Security Misconfiguration</td><td>CWE-200</td><td>High</td><td>Remove or minimize technology/version information from HTTP response headers.</td></tr><tr><td>Medium</td><td>Form Uses GET Method: Form #1</td><td>A02: Cryptographic Failures</td><td>CWE-598</td><td>High</td><td>Use POST for forms that send sensitive information.</td></tr><tr><td>Info</td><td>Detected Frontend Library: jquery 3.7.1</td><td>A06: Vulnerable and Outdated Components</td><td>CWE-1104</td><td>Low</td><td>Check if this library version has known vulnerabilities and update if needed.</td></tr><tr><td>Medium</td><td>Missing Security Header: Strict-Transport-Security</td><td>A05: Security Misconfiguration</td><td>CWE-319</td><td>High</td><td>Add Strict-Transport-Security header.</td></tr><tr><td>Medium</td><td>Weak Content Security Policy</td><td>A03: Injection</td><td>CWE-79</td><td>High</td><td>Tighten CSP directives and avoid unsafe inline script, unsafe eval, broad wildcards, and unnecessary data sources.</td></tr><tr><td>Low</td><td>Information Disclosure in Header: Server</td><td>A05: Security Misconfiguration</td><td>CWE-200</td><td>High</td><td>Remove or minimize technology/version information from HTTP response headers.</td></tr><tr><td>Medium</td><td>Form Uses GET Method: Form #1</td><td>A02: Cryptographic Failures</td><td>CWE-598</td><td>High</td><td>Use POST for forms that send sensitive information.</td></tr><tr><td>Info</td><td>Detected Frontend Library: jquery 3.7.1</td><td>A06: Vulnerable and Outdated Components</td><td>CWE-1104</td><td>Low</td><td>Check if this library version has known vulnerabilities and update if needed.</td></tr><tr><td>Medium</td><td>Missing Security Header: Strict-Transport-Security</td><td>A05: Security Misconfiguration</td><td>CWE-319</td><td>High</td><td>Add Strict-Transport-Security header.</td></tr><tr><td>Medium</td><td>Weak Content Security Policy</td><td>A03: Injection</td><td>CWE-79</td><td>High</td><td>Tighten CSP directives and avoid unsafe inline script, unsafe eval, broad wildcards, and unnecessary data sources.</td></tr><tr><td>Low</td><td>Information Disclosure in Header: Server</td><td>A05: Security Misconfiguration</td><td>CWE-200</td><td>High</td><td>Remove or minimize technology/version information from HTTP response headers.</td></tr><tr><td>Medium</td><td>Form Uses GET Method: Form #1</td><td>A02: Cryptographic Failures</td><td>CWE-598</td><td>High</td><td>Use POST for forms that send sensitive information.</td></tr><tr><td>Medium</td><td>Form Uses GET Method: Form #2</td><td>A02: Cryptographic Failures</td><td>CWE-598</td><td>High</td><td>Use POST for forms that send sensitive information.</td></tr><tr><td>Info</td><td>Detected Frontend Library: jquery 3.7.1</td><td>A06: Vulnerable and Outdated Components</td><td>CWE-1104</td><td>Low</td><td>Check if this library version has known vulnerabilities and update if needed.</td></tr><tr><td>Medium</td><td>SQL Injection Review Candidate: Form #1</td><td>A03: Injection</td><td>CWE-89</td><td>Medium</td><td>Validate input server-side and use parameterized queries for all database access.</td></tr><tr><td>Medium</td><td>Stored XSS Review Candidate</td><td>A03: Injection</td><td>CWE-79</td><td>Medium</td><td>HTML-encode stored user content by output context, sanitize rich text, and add regression tests for stored XSS.</td></tr></tbody>
+      </table>
+    </section>
+    <section>
+      <h2>How to Prevent Recurrence</h2>
+      <div class="prevention-grid"><article><strong>Missing Security Header: Content-Security-Policy</strong><p>Add a strong Content-Security-Policy header.</p><small>High - 1 related finding</small></article><article><strong>Possible Exposed Sensitive Path: /dashboard</strong><p>Restrict access to sensitive files and directories.</p><small>High - 1 related finding</small></article><article><strong>Missing Security Header: Strict-Transport-Security</strong><p>Add Strict-Transport-Security header.</p><small>Medium - 13 related findings</small></article><article><strong>Weak Content Security Policy</strong><p>Tighten CSP directives and avoid unsafe inline script, unsafe eval, broad wildcards, and unnecessary data sources.</p><small>Medium - 12 related findings</small></article><article><strong>Form Uses GET Method: Form #1</strong><p>Use POST for forms that send sensitive information.</p><small>Medium - 9 related findings</small></article><article><strong>Form Uses GET Method: Form #2</strong><p>Use POST for forms that send sensitive information.</p><small>Medium - 3 related findings</small></article></div>
+    </section>
+  </main>
+</body>
+</html>

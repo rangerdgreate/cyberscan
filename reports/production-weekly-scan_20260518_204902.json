@@ -1,0 +1,672 @@
+{
+    "scanner": {
+        "name": "CyberScan",
+        "version": "1.2.0"
+    },
+    "scan": {
+        "name": "Production Weekly Scan",
+        "type": "Full",
+        "targets": [
+            "https://juice-shop.herokuapp.com"
+        ],
+        "tags": [
+            "depth-3",
+            "full"
+        ],
+        "profile": {
+            "description": "Balanced crawl and safe OWASP-aligned scan.",
+            "modules": [
+                "Controlled crawling",
+                "Form and input review",
+                "Safe SQL/XSS indicators",
+                "Sensitive file and directory checks"
+            ],
+            "safe_probe_limit": 12
+        },
+        "settings": {
+            "max_depth": 3,
+            "include_paths": [],
+            "exclude_paths": [
+                "/logout|/signout"
+            ],
+            "rate_limit": 10,
+            "max_pages": 100,
+            "crawled_urls": [
+                "https://juice-shop.herokuapp.com"
+            ]
+        }
+    },
+    "target": "https://juice-shop.herokuapp.com",
+    "final_url": "https://juice-shop.herokuapp.com/",
+    "scan_date": "2026-05-18T20:49:02.506757",
+    "duration_seconds": 20.37,
+    "summary": {
+        "Critical": 0,
+        "High": 19,
+        "Medium": 8,
+        "Low": 4,
+        "Info": 5
+    },
+    "affected_hosts": [
+        {
+            "host": "www.juice-shop.herokuapp.com",
+            "findings": 36
+        },
+        {
+            "host": "juice-shop.herokuapp.com",
+            "findings": 35
+        }
+    ],
+    "category_summary": {
+        "A05: Security Misconfiguration": 21,
+        "A03: Injection": 1,
+        "A01: Broken Access Control": 14
+    },
+    "cwe_summary": {
+        "CWE-319": 1,
+        "CWE-79": 1,
+        "CWE-693": 2,
+        "CWE-200": 1,
+        "CWE-284": 14,
+        "CWE-538": 17
+    },
+    "confidence_summary": {
+        "High": 6,
+        "Low": 5,
+        "Medium": 25
+    },
+    "discovery_sources": [
+        {
+            "source": "robots.txt",
+            "url": "https://juice-shop.herokuapp.com/robots.txt",
+            "discovered_urls": 0,
+            "notes": "1 disallow rule(s) observed"
+        }
+    ],
+    "robots_policies": [
+        {
+            "url": "https://juice-shop.herokuapp.com/robots.txt",
+            "disallow_count": 1,
+            "sample_disallow": [
+                "/ftp"
+            ],
+            "sitemaps": []
+        }
+    ],
+    "comparison": {
+        "new": 36,
+        "existing": 0,
+        "fixed": 7,
+        "fixed_findings": [
+            {
+                "title": "Missing Security Header: Strict-Transport-Security",
+                "severity": "Medium",
+                "owasp_category": "A05: Security Misconfiguration",
+                "cwe": "CWE-N/A",
+                "confidence": "Medium",
+                "affected_url": "https://juice-shop.herokuapp.com",
+                "evidence": "HSTS header is missing. This helps enforce HTTPS connections."
+            },
+            {
+                "title": "Missing Security Header: Content-Security-Policy",
+                "severity": "High",
+                "owasp_category": "A03: Injection",
+                "cwe": "CWE-N/A",
+                "confidence": "Medium",
+                "affected_url": "https://juice-shop.herokuapp.com",
+                "evidence": "Content Security Policy is missing. This may increase XSS risk."
+            },
+            {
+                "title": "Missing Security Header: X-Frame-Options",
+                "severity": "Medium",
+                "owasp_category": "A05: Security Misconfiguration",
+                "cwe": "CWE-N/A",
+                "confidence": "Medium",
+                "affected_url": "https://juice-shop.herokuapp.com",
+                "evidence": "X-Frame-Options header is missing. The site may be vulnerable to clickjacking."
+            },
+            {
+                "title": "Missing Security Header: X-Content-Type-Options",
+                "severity": "Low",
+                "owasp_category": "A05: Security Misconfiguration",
+                "cwe": "CWE-N/A",
+                "confidence": "Medium",
+                "affected_url": "https://juice-shop.herokuapp.com",
+                "evidence": "X-Content-Type-Options header is missing."
+            },
+            {
+                "title": "Missing Security Header: Referrer-Policy",
+                "severity": "Low",
+                "owasp_category": "A05: Security Misconfiguration",
+                "cwe": "CWE-N/A",
+                "confidence": "Medium",
+                "affected_url": "https://juice-shop.herokuapp.com",
+                "evidence": "Referrer-Policy header is missing."
+            },
+            {
+                "title": "Missing Security Header: Permissions-Policy",
+                "severity": "Low",
+                "owasp_category": "A05: Security Misconfiguration",
+                "cwe": "CWE-N/A",
+                "confidence": "Medium",
+                "affected_url": "https://juice-shop.herokuapp.com",
+                "evidence": "Permissions-Policy header is missing."
+            },
+            {
+                "title": "Information Disclosure in Header: Server",
+                "severity": "Low",
+                "owasp_category": "A05: Security Misconfiguration",
+                "cwe": "CWE-N/A",
+                "confidence": "Medium",
+                "affected_url": "https://juice-shop.herokuapp.com/",
+                "evidence": "Server: Heroku"
+            }
+        ]
+    },
+    "findings": [
+        {
+            "title": "Missing Security Header: Strict-Transport-Security",
+            "severity": "Medium",
+            "owasp_category": "A05: Security Misconfiguration",
+            "cwe": "CWE-319",
+            "confidence": "High",
+            "validation_status": "Observed",
+            "description": "HSTS header is missing. This helps enforce HTTPS connections.",
+            "recommendation": "Add Strict-Transport-Security header.",
+            "affected_url": "https://juice-shop.herokuapp.com",
+            "evidence": "HSTS header is missing. This helps enforce HTTPS connections.",
+            "status_code": null,
+            "lifecycle_status": "New"
+        },
+        {
+            "title": "Missing Security Header: Content-Security-Policy",
+            "severity": "High",
+            "owasp_category": "A03: Injection",
+            "cwe": "CWE-79",
+            "confidence": "High",
+            "validation_status": "Observed",
+            "description": "Content Security Policy is missing. This may increase XSS risk.",
+            "recommendation": "Add a strong Content-Security-Policy header.",
+            "affected_url": "https://juice-shop.herokuapp.com",
+            "evidence": "Content Security Policy is missing. This may increase XSS risk.",
+            "status_code": null,
+            "lifecycle_status": "New"
+        },
+        {
+            "title": "Missing Security Header: Referrer-Policy",
+            "severity": "Low",
+            "owasp_category": "A05: Security Misconfiguration",
+            "cwe": "CWE-693",
+            "confidence": "High",
+            "validation_status": "Observed",
+            "description": "Referrer-Policy header is missing.",
+            "recommendation": "Add Referrer-Policy: no-referrer or strict-origin-when-cross-origin.",
+            "affected_url": "https://juice-shop.herokuapp.com",
+            "evidence": "Referrer-Policy header is missing.",
+            "status_code": null,
+            "lifecycle_status": "New"
+        },
+        {
+            "title": "Missing Security Header: Permissions-Policy",
+            "severity": "Low",
+            "owasp_category": "A05: Security Misconfiguration",
+            "cwe": "CWE-693",
+            "confidence": "High",
+            "validation_status": "Observed",
+            "description": "Permissions-Policy header is missing.",
+            "recommendation": "Add Permissions-Policy to limit browser feature access.",
+            "affected_url": "https://juice-shop.herokuapp.com",
+            "evidence": "Permissions-Policy header is missing.",
+            "status_code": null,
+            "lifecycle_status": "New"
+        },
+        {
+            "title": "Information Disclosure in Header: Server",
+            "severity": "Low",
+            "owasp_category": "A05: Security Misconfiguration",
+            "cwe": "CWE-200",
+            "confidence": "High",
+            "validation_status": "Observed",
+            "description": "The response exposes server technology information: Server: Heroku",
+            "recommendation": "Remove or minimize technology/version information from HTTP response headers.",
+            "affected_url": "https://juice-shop.herokuapp.com/",
+            "evidence": "Server: Heroku",
+            "status_code": 200,
+            "lifecycle_status": "New"
+        },
+        {
+            "title": "Interesting API Routes Exposed in Client Bundle",
+            "severity": "Info",
+            "owasp_category": "A01: Broken Access Control",
+            "cwe": "CWE-284",
+            "confidence": "Low",
+            "validation_status": "Informational",
+            "description": "Client-side JavaScript exposes route names related to authentication, users, admin, or account data.",
+            "recommendation": "Verify server-side authorization on every API route; do not rely on hidden frontend routes for access control.",
+            "affected_url": "https://juice-shop.herokuapp.com/scripts.js",
+            "evidence": "/api.ipinfodb.com/v3/ip-country/?key=, /apis/geoip2/v2.1/geoip2.js",
+            "status_code": 200,
+            "lifecycle_status": "New"
+        },
+        {
+            "title": "Interesting API Routes Exposed in Client Bundle",
+            "severity": "Info",
+            "owasp_category": "A01: Broken Access Control",
+            "cwe": "CWE-284",
+            "confidence": "Low",
+            "validation_status": "Informational",
+            "description": "Client-side JavaScript exposes route names related to authentication, users, admin, or account data.",
+            "recommendation": "Verify server-side authorization on every API route; do not rely on hidden frontend routes for access control.",
+            "affected_url": "https://juice-shop.herokuapp.com/main.js",
+            "evidence": "/api/BasketItems, /api/Cards, /api/Complaints, /api/Deliverys, /api/Hints, /api/Products, /api/Quantitys, /api/SecurityAnswers, /api/SecurityQuestions, /basket",
+            "status_code": 200,
+            "lifecycle_status": "New"
+        },
+        {
+            "title": "Possible Exposed Sensitive Path: /.env",
+            "severity": "High",
+            "owasp_category": "A05: Security Misconfiguration",
+            "cwe": "CWE-538",
+            "confidence": "Medium",
+            "validation_status": "Needs Manual Validation",
+            "description": "The path /.env returned HTTP 200 OK.",
+            "recommendation": "Restrict access to sensitive files and directories.",
+            "affected_url": "https://juice-shop.herokuapp.com/.env",
+            "evidence": "HTTP 200 https://juice-shop.herokuapp.com/.env",
+            "status_code": 200,
+            "lifecycle_status": "New"
+        },
+        {
+            "title": "Possible Exposed Sensitive Path: /.git/config",
+            "severity": "High",
+            "owasp_category": "A05: Security Misconfiguration",
+            "cwe": "CWE-538",
+            "confidence": "Medium",
+            "validation_status": "Needs Manual Validation",
+            "description": "The path /.git/config returned HTTP 200 OK.",
+            "recommendation": "Restrict access to sensitive files and directories.",
+            "affected_url": "https://juice-shop.herokuapp.com/.git/config",
+            "evidence": "HTTP 200 https://juice-shop.herokuapp.com/.git/config",
+            "status_code": 200,
+            "lifecycle_status": "New"
+        },
+        {
+            "title": "Possible Exposed Sensitive Path: /backup.zip",
+            "severity": "High",
+            "owasp_category": "A05: Security Misconfiguration",
+            "cwe": "CWE-538",
+            "confidence": "Medium",
+            "validation_status": "Needs Manual Validation",
+            "description": "The path /backup.zip returned HTTP 200 OK.",
+            "recommendation": "Restrict access to sensitive files and directories.",
+            "affected_url": "https://juice-shop.herokuapp.com/backup.zip",
+            "evidence": "HTTP 200 https://juice-shop.herokuapp.com/backup.zip",
+            "status_code": 200,
+            "lifecycle_status": "New"
+        },
+        {
+            "title": "Possible Exposed Sensitive Path: /backup.sql",
+            "severity": "High",
+            "owasp_category": "A05: Security Misconfiguration",
+            "cwe": "CWE-538",
+            "confidence": "Medium",
+            "validation_status": "Needs Manual Validation",
+            "description": "The path /backup.sql returned HTTP 200 OK.",
+            "recommendation": "Restrict access to sensitive files and directories.",
+            "affected_url": "https://juice-shop.herokuapp.com/backup.sql",
+            "evidence": "HTTP 200 https://juice-shop.herokuapp.com/backup.sql",
+            "status_code": 200,
+            "lifecycle_status": "New"
+        },
+        {
+            "title": "Possible Exposed Sensitive Path: /database.sql",
+            "severity": "High",
+            "owasp_category": "A05: Security Misconfiguration",
+            "cwe": "CWE-538",
+            "confidence": "Medium",
+            "validation_status": "Needs Manual Validation",
+            "description": "The path /database.sql returned HTTP 200 OK.",
+            "recommendation": "Restrict access to sensitive files and directories.",
+            "affected_url": "https://juice-shop.herokuapp.com/database.sql",
+            "evidence": "HTTP 200 https://juice-shop.herokuapp.com/database.sql",
+            "status_code": 200,
+            "lifecycle_status": "New"
+        },
+        {
+            "title": "Possible Exposed Sensitive Path: /phpinfo.php",
+            "severity": "High",
+            "owasp_category": "A05: Security Misconfiguration",
+            "cwe": "CWE-538",
+            "confidence": "Medium",
+            "validation_status": "Needs Manual Validation",
+            "description": "The path /phpinfo.php returned HTTP 200 OK.",
+            "recommendation": "Restrict access to sensitive files and directories.",
+            "affected_url": "https://juice-shop.herokuapp.com/phpinfo.php",
+            "evidence": "HTTP 200 https://juice-shop.herokuapp.com/phpinfo.php",
+            "status_code": 200,
+            "lifecycle_status": "New"
+        },
+        {
+            "title": "Possible Exposed Sensitive Path: /admin",
+            "severity": "High",
+            "owasp_category": "A05: Security Misconfiguration",
+            "cwe": "CWE-538",
+            "confidence": "Medium",
+            "validation_status": "Needs Manual Validation",
+            "description": "The path /admin returned HTTP 200 OK.",
+            "recommendation": "Restrict access to sensitive files and directories.",
+            "affected_url": "https://juice-shop.herokuapp.com/admin",
+            "evidence": "HTTP 200 https://juice-shop.herokuapp.com/admin",
+            "status_code": 200,
+            "lifecycle_status": "New"
+        },
+        {
+            "title": "Possible Exposed Sensitive Path: /dashboard",
+            "severity": "High",
+            "owasp_category": "A05: Security Misconfiguration",
+            "cwe": "CWE-538",
+            "confidence": "Medium",
+            "validation_status": "Needs Manual Validation",
+            "description": "The path /dashboard returned HTTP 200 OK.",
+            "recommendation": "Restrict access to sensitive files and directories.",
+            "affected_url": "https://juice-shop.herokuapp.com/dashboard",
+            "evidence": "HTTP 200 https://juice-shop.herokuapp.com/dashboard",
+            "status_code": 200,
+            "lifecycle_status": "New"
+        },
+        {
+            "title": "Possible Exposed Sensitive Path: /settings",
+            "severity": "High",
+            "owasp_category": "A05: Security Misconfiguration",
+            "cwe": "CWE-538",
+            "confidence": "Medium",
+            "validation_status": "Needs Manual Validation",
+            "description": "The path /settings returned HTTP 200 OK.",
+            "recommendation": "Restrict access to sensitive files and directories.",
+            "affected_url": "https://juice-shop.herokuapp.com/settings",
+            "evidence": "HTTP 200 https://juice-shop.herokuapp.com/settings",
+            "status_code": 200,
+            "lifecycle_status": "New"
+        },
+        {
+            "title": "Possible Exposed Sensitive Path: /config.php",
+            "severity": "High",
+            "owasp_category": "A05: Security Misconfiguration",
+            "cwe": "CWE-538",
+            "confidence": "Medium",
+            "validation_status": "Needs Manual Validation",
+            "description": "The path /config.php returned HTTP 200 OK.",
+            "recommendation": "Restrict access to sensitive files and directories.",
+            "affected_url": "https://juice-shop.herokuapp.com/config.php",
+            "evidence": "HTTP 200 https://juice-shop.herokuapp.com/config.php",
+            "status_code": 200,
+            "lifecycle_status": "New"
+        },
+        {
+            "title": "Possible Exposed Sensitive Path: /debug",
+            "severity": "High",
+            "owasp_category": "A05: Security Misconfiguration",
+            "cwe": "CWE-538",
+            "confidence": "Medium",
+            "validation_status": "Needs Manual Validation",
+            "description": "The path /debug returned HTTP 200 OK.",
+            "recommendation": "Restrict access to sensitive files and directories.",
+            "affected_url": "https://juice-shop.herokuapp.com/debug",
+            "evidence": "HTTP 200 https://juice-shop.herokuapp.com/debug",
+            "status_code": 200,
+            "lifecycle_status": "New"
+        },
+        {
+            "title": "Possible Exposed Sensitive Path: /test",
+            "severity": "High",
+            "owasp_category": "A05: Security Misconfiguration",
+            "cwe": "CWE-538",
+            "confidence": "Medium",
+            "validation_status": "Needs Manual Validation",
+            "description": "The path /test returned HTTP 200 OK.",
+            "recommendation": "Restrict access to sensitive files and directories.",
+            "affected_url": "https://juice-shop.herokuapp.com/test",
+            "evidence": "HTTP 200 https://juice-shop.herokuapp.com/test",
+            "status_code": 200,
+            "lifecycle_status": "New"
+        },
+        {
+            "title": "Possible Exposed Sensitive Path: /ftp/",
+            "severity": "High",
+            "owasp_category": "A05: Security Misconfiguration",
+            "cwe": "CWE-538",
+            "confidence": "Medium",
+            "validation_status": "Needs Manual Validation",
+            "description": "The path /ftp/ returned HTTP 200 OK.",
+            "recommendation": "Restrict access to sensitive files and directories.",
+            "affected_url": "https://juice-shop.herokuapp.com/ftp/",
+            "evidence": "HTTP 200 https://juice-shop.herokuapp.com/ftp/",
+            "status_code": 200,
+            "lifecycle_status": "New"
+        },
+        {
+            "title": "Protected Sensitive Path Found: /ftp/package.json.bak",
+            "severity": "Low",
+            "owasp_category": "A05: Security Misconfiguration",
+            "cwe": "CWE-538",
+            "confidence": "High",
+            "validation_status": "Observed",
+            "description": "The path /ftp/package.json.bak exists but access is restricted.",
+            "recommendation": "Verify that this path should be publicly reachable.",
+            "affected_url": "https://juice-shop.herokuapp.com/ftp/package.json.bak",
+            "evidence": "HTTP 403 https://juice-shop.herokuapp.com/ftp/package.json.bak",
+            "status_code": 403,
+            "lifecycle_status": "New"
+        },
+        {
+            "title": "Possible Exposed Sensitive Path: /encryptionkeys/",
+            "severity": "High",
+            "owasp_category": "A05: Security Misconfiguration",
+            "cwe": "CWE-538",
+            "confidence": "Medium",
+            "validation_status": "Needs Manual Validation",
+            "description": "The path /encryptionkeys/ returned HTTP 200 OK.",
+            "recommendation": "Restrict access to sensitive files and directories.",
+            "affected_url": "https://juice-shop.herokuapp.com/encryptionkeys/",
+            "evidence": "HTTP 200 https://juice-shop.herokuapp.com/encryptionkeys/",
+            "status_code": 200,
+            "lifecycle_status": "New"
+        },
+        {
+            "title": "Possible Exposed Sensitive Path: /logs/",
+            "severity": "High",
+            "owasp_category": "A05: Security Misconfiguration",
+            "cwe": "CWE-538",
+            "confidence": "Medium",
+            "validation_status": "Needs Manual Validation",
+            "description": "The path /logs/ returned HTTP 200 OK.",
+            "recommendation": "Restrict access to sensitive files and directories.",
+            "affected_url": "https://juice-shop.herokuapp.com/logs/",
+            "evidence": "HTTP 200 https://juice-shop.herokuapp.com/logs/",
+            "status_code": 200,
+            "lifecycle_status": "New"
+        },
+        {
+            "title": "Possible Exposed Sensitive Path: /swagger.json",
+            "severity": "High",
+            "owasp_category": "A05: Security Misconfiguration",
+            "cwe": "CWE-538",
+            "confidence": "Medium",
+            "validation_status": "Needs Manual Validation",
+            "description": "The path /swagger.json returned HTTP 200 OK.",
+            "recommendation": "Restrict access to sensitive files and directories.",
+            "affected_url": "https://juice-shop.herokuapp.com/swagger.json",
+            "evidence": "HTTP 200 https://juice-shop.herokuapp.com/swagger.json",
+            "status_code": 200,
+            "lifecycle_status": "New"
+        },
+        {
+            "title": "Possible Public Access to Protected Page: /admin",
+            "severity": "Medium",
+            "owasp_category": "A01: Broken Access Control",
+            "cwe": "CWE-284",
+            "confidence": "Medium",
+            "validation_status": "Needs Manual Validation",
+            "description": "The path /admin returned HTTP 200 OK without authentication.",
+            "recommendation": "Verify if this page should require authentication.",
+            "affected_url": "https://juice-shop.herokuapp.com/admin",
+            "evidence": "HTTP 200 https://juice-shop.herokuapp.com/admin",
+            "status_code": 200,
+            "lifecycle_status": "New"
+        },
+        {
+            "title": "Possible Public Access to Protected Page: /dashboard",
+            "severity": "Medium",
+            "owasp_category": "A01: Broken Access Control",
+            "cwe": "CWE-284",
+            "confidence": "Medium",
+            "validation_status": "Needs Manual Validation",
+            "description": "The path /dashboard returned HTTP 200 OK without authentication.",
+            "recommendation": "Verify if this page should require authentication.",
+            "affected_url": "https://juice-shop.herokuapp.com/dashboard",
+            "evidence": "HTTP 200 https://juice-shop.herokuapp.com/dashboard",
+            "status_code": 200,
+            "lifecycle_status": "New"
+        },
+        {
+            "title": "Possible Public Access to Protected Page: /user",
+            "severity": "Medium",
+            "owasp_category": "A01: Broken Access Control",
+            "cwe": "CWE-284",
+            "confidence": "Medium",
+            "validation_status": "Needs Manual Validation",
+            "description": "The path /user returned HTTP 200 OK without authentication.",
+            "recommendation": "Verify if this page should require authentication.",
+            "affected_url": "https://juice-shop.herokuapp.com/user",
+            "evidence": "HTTP 200 https://juice-shop.herokuapp.com/user",
+            "status_code": 200,
+            "lifecycle_status": "New"
+        },
+        {
+            "title": "Possible Public Access to Protected Page: /account",
+            "severity": "Medium",
+            "owasp_category": "A01: Broken Access Control",
+            "cwe": "CWE-284",
+            "confidence": "Medium",
+            "validation_status": "Needs Manual Validation",
+            "description": "The path /account returned HTTP 200 OK without authentication.",
+            "recommendation": "Verify if this page should require authentication.",
+            "affected_url": "https://juice-shop.herokuapp.com/account",
+            "evidence": "HTTP 200 https://juice-shop.herokuapp.com/account",
+            "status_code": 200,
+            "lifecycle_status": "New"
+        },
+        {
+            "title": "Possible Public Access to Protected Page: /settings",
+            "severity": "Medium",
+            "owasp_category": "A01: Broken Access Control",
+            "cwe": "CWE-284",
+            "confidence": "Medium",
+            "validation_status": "Needs Manual Validation",
+            "description": "The path /settings returned HTTP 200 OK without authentication.",
+            "recommendation": "Verify if this page should require authentication.",
+            "affected_url": "https://juice-shop.herokuapp.com/settings",
+            "evidence": "HTTP 200 https://juice-shop.herokuapp.com/settings",
+            "status_code": 200,
+            "lifecycle_status": "New"
+        },
+        {
+            "title": "Protected API Endpoint Present: /api/Users",
+            "severity": "Info",
+            "owasp_category": "A01: Broken Access Control",
+            "cwe": "CWE-284",
+            "confidence": "Low",
+            "validation_status": "Informational",
+            "description": "A sensitive-looking API endpoint exists and denied unauthenticated access.",
+            "recommendation": "Keep this endpoint covered by authorization regression tests.",
+            "affected_url": "https://juice-shop.herokuapp.com/api/Users",
+            "evidence": "HTTP 401 https://juice-shop.herokuapp.com/api/Users",
+            "status_code": 401,
+            "lifecycle_status": "New"
+        },
+        {
+            "title": "Protected API Endpoint Present: /api/Users/",
+            "severity": "Info",
+            "owasp_category": "A01: Broken Access Control",
+            "cwe": "CWE-284",
+            "confidence": "Low",
+            "validation_status": "Informational",
+            "description": "A sensitive-looking API endpoint exists and denied unauthenticated access.",
+            "recommendation": "Keep this endpoint covered by authorization regression tests.",
+            "affected_url": "https://juice-shop.herokuapp.com/api/Users/",
+            "evidence": "HTTP 401 https://juice-shop.herokuapp.com/api/Users/",
+            "status_code": 401,
+            "lifecycle_status": "New"
+        },
+        {
+            "title": "Possible Public Sensitive API: /rest/user/whoami",
+            "severity": "High",
+            "owasp_category": "A01: Broken Access Control",
+            "cwe": "CWE-284",
+            "confidence": "Medium",
+            "validation_status": "Needs Manual Validation",
+            "description": "A sensitive-looking API endpoint returned data without an authenticated session.",
+            "recommendation": "Enforce server-side authorization checks on every API route and verify object-level access control.",
+            "affected_url": "https://juice-shop.herokuapp.com/rest/user/whoami",
+            "evidence": "HTTP 200; body starts with: {\"user\":{}}",
+            "status_code": 200,
+            "lifecycle_status": "New"
+        },
+        {
+            "title": "Protected API Endpoint Present: /rest/basket/1",
+            "severity": "Info",
+            "owasp_category": "A01: Broken Access Control",
+            "cwe": "CWE-284",
+            "confidence": "Low",
+            "validation_status": "Informational",
+            "description": "A sensitive-looking API endpoint exists and denied unauthenticated access.",
+            "recommendation": "Keep this endpoint covered by authorization regression tests.",
+            "affected_url": "https://juice-shop.herokuapp.com/rest/basket/1",
+            "evidence": "HTTP 401 https://juice-shop.herokuapp.com/rest/basket/1",
+            "status_code": 401,
+            "lifecycle_status": "New"
+        },
+        {
+            "title": "Possible Public Sensitive API: /rest/admin/application-configuration",
+            "severity": "High",
+            "owasp_category": "A01: Broken Access Control",
+            "cwe": "CWE-284",
+            "confidence": "Medium",
+            "validation_status": "Needs Manual Validation",
+            "description": "A sensitive-looking API endpoint returned data without an authenticated session.",
+            "recommendation": "Enforce server-side authorization checks on every API route and verify object-level access control.",
+            "affected_url": "https://juice-shop.herokuapp.com/rest/admin/application-configuration",
+            "evidence": "HTTP 200; body starts with: {\"config\":{\"server\":{\"port\":3000,\"basePath\":\"\",\"baseUrl\":\"http://localhost:3000\"},\"application\":{\"domain\":\"juice-sh.op\",\"name\":\"OWASP Juice Shop\",\"logo\":\"JuiceS",
+            "status_code": 200,
+            "lifecycle_status": "New"
+        },
+        {
+            "title": "Possible Public Sensitive API: /api/SecurityQuestions",
+            "severity": "Medium",
+            "owasp_category": "A01: Broken Access Control",
+            "cwe": "CWE-284",
+            "confidence": "Medium",
+            "validation_status": "Needs Manual Validation",
+            "description": "A sensitive-looking API endpoint returned data without an authenticated session.",
+            "recommendation": "Enforce server-side authorization checks on every API route and verify object-level access control.",
+            "affected_url": "https://juice-shop.herokuapp.com/api/SecurityQuestions",
+            "evidence": "HTTP 200; body starts with: {\"status\":\"success\",\"data\":[{\"id\":1,\"question\":\"Your eldest siblings middle name?\",\"createdAt\":\"2026-05-18T11:43:05.103Z\",\"updatedAt\":\"2026-05-18T11:43:05.103Z\"",
+            "status_code": 200,
+            "lifecycle_status": "New"
+        },
+        {
+            "title": "Possible Public Sensitive API: /api/Feedbacks",
+            "severity": "Medium",
+            "owasp_category": "A01: Broken Access Control",
+            "cwe": "CWE-284",
+            "confidence": "Medium",
+            "validation_status": "Needs Manual Validation",
+            "description": "A sensitive-looking API endpoint returned data without an authenticated session.",
+            "recommendation": "Enforce server-side authorization checks on every API route and verify object-level access control.",
+            "affected_url": "https://juice-shop.herokuapp.com/api/Feedbacks",
+            "evidence": "HTTP 200; body starts with: {\"status\":\"success\",\"data\":[{\"UserId\":1,\"id\":1,\"comment\":\"I love this shop! Best products in town! Highly recommended! (***in@juice-sh.op)\",\"rating\":5,\"createdA",
+            "status_code": 200,
+            "lifecycle_status": "New"
+        }
+    ]
+}

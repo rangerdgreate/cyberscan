@@ -1,0 +1,12 @@
+Title,Severity,OWASP Category,Description,Recommendation
+Website Does Not Use HTTPS,High,A02: Cryptographic Failures,The target website is using HTTP instead of HTTPS.,Use HTTPS with a valid TLS/SSL certificate.
+Missing Security Header: Strict-Transport-Security,Medium,A05: Security Misconfiguration,HSTS header is missing. This helps enforce HTTPS connections.,Add Strict-Transport-Security header.
+Missing Security Header: Content-Security-Policy,High,A03: Injection,Content Security Policy is missing. This may increase XSS risk.,Add a strong Content-Security-Policy header.
+Missing Security Header: X-Frame-Options,Medium,A05: Security Misconfiguration,X-Frame-Options header is missing. The site may be vulnerable to clickjacking.,Add X-Frame-Options: DENY or SAMEORIGIN.
+Missing Security Header: X-Content-Type-Options,Low,A05: Security Misconfiguration,X-Content-Type-Options header is missing.,Add X-Content-Type-Options: nosniff.
+Missing Security Header: Referrer-Policy,Low,A05: Security Misconfiguration,Referrer-Policy header is missing.,Add Referrer-Policy: no-referrer or strict-origin-when-cross-origin.
+Missing Security Header: Permissions-Policy,Low,A05: Security Misconfiguration,Permissions-Policy header is missing.,Add Permissions-Policy to limit browser feature access.
+Information Disclosure in Header: Server,Low,A05: Security Misconfiguration,The response exposes server technology information: Server: CyberScanWeb/1.0 Python/3.13.2,Remove or minimize technology/version information from HTTP response headers.
+Form Uses GET Method: Form #1,Medium,A02: Cryptographic Failures,A form uses the GET method. Sensitive data may appear in URLs.,Use POST for forms that send sensitive information.
+Password Form Without HTTPS: Form #1,High,A07: Identification and Authentication Failures,A password field was found on a non-HTTPS page.,Always use HTTPS for login and password forms.
+Possible Error Message Disclosure,Medium,A05: Security Misconfiguration,The page contains possible technical error text: stack trace,Disable detailed error messages in production.

@@ -1,0 +1,64 @@
+{
+    "scanner": {
+        "name": "CyberScan",
+        "version": "1.1.0"
+    },
+    "scan": {
+        "name": "web",
+        "type": "Full",
+        "targets": [
+            "https://api.example.com",
+            "https://www.example.com",
+            "https://admin.example.com"
+        ],
+        "tags": [
+            "depth-5",
+            "full"
+        ]
+    },
+    "target": "https://api.example.com",
+    "final_url": "https://api.example.com",
+    "scan_date": "2026-05-12T22:20:53.204056",
+    "duration_seconds": 0.2,
+    "summary": {
+        "Critical": 0,
+        "High": 1,
+        "Medium": 1,
+        "Low": 0,
+        "Info": 0
+    },
+    "affected_hosts": [
+        {
+            "host": "api.example.com",
+            "findings": 2
+        },
+        {
+            "host": "www.example.com",
+            "findings": 1
+        },
+        {
+            "host": "admin.example.com",
+            "findings": 1
+        }
+    ],
+    "category_summary": {
+        "A02: Cryptographic Failures": 1,
+        "Security Misconfiguration": 1
+    },
+    "findings": [
+        {
+            "title": "SSL Certificate Check Failed",
+            "severity": "Medium",
+            "owasp_category": "A02: Cryptographic Failures",
+            "description": "The scanner could not verify the SSL certificate. Error: [Errno 11001] getaddrinfo failed",
+            "recommendation": "Make sure the website has a valid SSL/TLS certificate."
+        },
+        {
+            "title": "Target Unreachable",
+            "severity": "High",
+            "owasp_category": "Security Misconfiguration",
+            "description": "The scanner could not reach the target. Error: HTTPSConnectionPool(host='api.example.com', port=443): Max retries exceeded with url: / (Caused by NameResolutionError(\"<urllib3.connection.HTTPSConnection object at 0x00000225AA4AB890>: Failed to resolve 'api.example.com' ([Errno 11001] getaddrinfo failed)\"))",
+            "recommendation": "Check if the target URL is correct and accessible."
+        }
+    ]
+}
