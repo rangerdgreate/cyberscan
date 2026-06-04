@@ -2052,6 +2052,7 @@ https://admin.example.com</textarea></div>
                   <div class="scan-progress-title"><span class="scan-orbit"></span><span data-scan-progress-title>Ready to scan</span></div>
                   <div class="scan-progress-actions">
                     <button class="btn danger" type="button" data-cancel-scan>Cancel Scan</button>
+                    <button class="btn ghost" type="button" data-exit-scan hidden>Exit to Dashboard</button>
                     <button class="btn primary" type="button" data-page="results" data-scan-done-action hidden>View Results</button>
                     <button class="btn ghost" type="button" data-page="reports" data-scan-done-action hidden>View Reports</button>
                     <div class="scan-percent" data-scan-percent>0%</div>
@@ -2356,6 +2357,7 @@ https://admin.example.com</textarea></div>
     const scanFill = document.querySelector('[data-scan-fill]');
     const scanStatus = document.querySelector('[data-scan-status]');
     const cancelScanButton = document.querySelector('[data-cancel-scan]');
+    const exitScanButton = document.querySelector('[data-exit-scan]');
     const scanDoneActions = document.querySelectorAll('[data-scan-done-action]');
     const scanProfileLabel = document.querySelector('[data-scan-profile-label]');
     const scanTargetCountLabel = document.querySelector('[data-scan-target-count]');
@@ -2398,6 +2400,7 @@ https://admin.example.com</textarea></div>
     let activeRole = 'Owner';
     let selectedScanType = 'Full';
     let scanProgressTimer = null;
+    let scanCancelReturnTimer = null;
     let scanProgressValue = 0;
     let scanCompleted = false;
     let currentResultsPage = 1;
@@ -2416,6 +2419,7 @@ https://admin.example.com</textarea></div>
     let pendingOtpEmail = '';
     let pendingOtpDelivery = '';
     let scanCancelledByUser = false;
+    let scanCancelHandled = false;
     let scanHistory = [];
     let latestScanGeneratedAt = null;
     const scanTypes = {
@@ -2483,11 +2487,7 @@ https://admin.example.com</textarea></div>
       }
     });
 
-    const recentScans = [
-      ['Acme Corp Staging Sweep', 'api.acme.test, www.acme.test', 'Authenticated', '2026-05-12 09:15', '1h 23m', 'Completed', ['2C','4H','7M','12L']],
-      ['Production Weekly Scan', 'app.production.com', 'Full', '2026-05-11 22:00', '2h 45m', 'Completed', ['2H','5M','8L']],
-      ['API Gateway Quick Check', 'gateway.internal', 'Quick', '2026-05-12 14:30', '18m', 'Running', ['1H','2M','3L']]
-    ];
+    const recentScans = [];
     const generatedReports = [
       ['Weekly Security Report - May Week 1', 'Executive Summary', '2026-05-11 14:30', 'PDF', '2.4 MB'],
       ['Acme Staging Vulnerabilities', 'Developer Handoff', '2026-05-10 09:15', 'HTML', '1.8 MB'],
@@ -3083,8 +3083,10 @@ https://admin.example.com</textarea></div>
 
     function resetScanProgress() {
       clearInterval(scanProgressTimer);
+      clearTimeout(scanCancelReturnTimer);
       scanProgressValue = 0;
       scanCancelledByUser = false;
+      scanCancelHandled = false;
       scanCompleted = false;
       document.body.classList.remove('scan-overlay-open');
       scanProgressPanel?.classList.remove('active', 'complete', 'failed');
@@ -3092,6 +3094,7 @@ https://admin.example.com</textarea></div>
       if (scanTargetCountLabel) scanTargetCountLabel.textContent = '0';
       updateScanProgress(0, 'Ready to scan', 'Configure a target and start the automated scan.');
       scanDoneActions.forEach((button) => button.hidden = true);
+      if (exitScanButton) exitScanButton.hidden = true;
       if (cancelScanButton) {
         cancelScanButton.hidden = false;
         cancelScanButton.disabled = false;
@@ -3149,7 +3152,9 @@ https://admin.example.com</textarea></div>
 
     function startScanProgress(targets) {
       clearInterval(scanProgressTimer);
+      clearTimeout(scanCancelReturnTimer);
       scanCancelledByUser = false;
+      scanCancelHandled = false;
       scanCompleted = false;
       scanProgressPanel?.classList.remove('complete', 'failed');
       scanProgressPanel?.classList.add('active');
@@ -3157,6 +3162,7 @@ https://admin.example.com</textarea></div>
       if (scanProfileLabel) scanProfileLabel.textContent = selectedScanType;
       if (scanTargetCountLabel) scanTargetCountLabel.textContent = String(targets.length || 1);
       scanDoneActions.forEach((button) => button.hidden = true);
+      if (exitScanButton) exitScanButton.hidden = true;
       if (cancelScanButton) {
         cancelScanButton.hidden = false;
         cancelScanButton.disabled = false;
@@ -3196,6 +3202,7 @@ https://admin.example.com</textarea></div>
       scanProgressPanel?.classList.add('complete');
       document.body.classList.remove('scan-overlay-open');
       if (cancelScanButton) cancelScanButton.hidden = true;
+      if (exitScanButton) exitScanButton.hidden = true;
       scanDoneActions.forEach((button) => button.hidden = false);
     }
 
@@ -3207,22 +3214,40 @@ https://admin.example.com</textarea></div>
       scanProgressPanel?.classList.add('failed');
       document.body.classList.remove('scan-overlay-open');
       scanDoneActions.forEach((button) => button.hidden = true);
+      if (exitScanButton) exitScanButton.hidden = false;
       if (cancelScanButton) cancelScanButton.disabled = true;
     }
 
     function cancelScanProgress() {
+      if (scanCancelHandled) return;
+      scanCancelHandled = true;
       clearInterval(scanProgressTimer);
+      clearTimeout(scanCancelReturnTimer);
       scanCompleted = false;
       updateScanProgress(scanProgressValue || 1, 'Scan cancelled', 'The scan was cancelled by the owner.');
       if (scanStageLabel) scanStageLabel.textContent = 'Cancelled';
       scanProgressPanel?.classList.add('failed');
-      document.body.classList.remove('scan-overlay-open');
       scanDoneActions.forEach((button) => button.hidden = true);
+      if (exitScanButton) exitScanButton.hidden = false;
       if (cancelScanButton) {
         cancelScanButton.hidden = false;
         cancelScanButton.disabled = true;
         cancelScanButton.textContent = 'Cancelled';
       }
+      mergeHistoryEntry(currentScanHistoryEntry('Cancelled'));
+      updateDashboardStats();
+      renderScanComparison();
+      renderAffectedHosts();
+      renderVulnerabilityTrendChart();
+      renderStaticTables();
+    }
+
+    function exitScanProgress() {
+      clearTimeout(scanCancelReturnTimer);
+      document.body.classList.remove('scan-overlay-open');
+      scanProgressPanel?.classList.remove('active', 'complete', 'failed');
+      routeTo('dashboard');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
     async function cancelActiveScan() {
@@ -3247,6 +3272,7 @@ https://admin.example.com</textarea></div>
     }
 
     cancelScanButton?.addEventListener('click', cancelActiveScan);
+    exitScanButton?.addEventListener('click', exitScanProgress);
 
     async function pollScanJob(scanId, signal) {
       const statusProgress = {
@@ -3624,6 +3650,31 @@ https://admin.example.com</textarea></div>
       return entry?.summary || entry?.report?.summary || {};
     }
 
+    function sortScanHistoryNewestFirst() {
+      scanHistory.sort((a, b) => (historyEntryDate(b)?.getTime() || 0) - (historyEntryDate(a)?.getTime() || 0));
+    }
+
+    function syncRecentScansFromHistory() {
+      sortScanHistoryNewestFirst();
+      recentScans.splice(0, recentScans.length, ...scanHistory.slice(0, 8).map(historyToRecentScanRow));
+    }
+
+    function currentScanHistoryEntry(status) {
+      const scanName = document.getElementById('scanName')?.value?.trim() || `${status} Scan`;
+      const targets = normalizeTargets(document.getElementById('targets')?.value || '').join(', ');
+      return {
+        scan_name: scanName,
+        target: targets || 'No target captured',
+        type: selectedScanType,
+        started: new Date().toISOString(),
+        duration_seconds: 0,
+        status,
+        summary: {},
+        findings_count: 0,
+        report_files: {}
+      };
+    }
+
     function reportHistoryEntry(report) {
       const summary = report.summary || {};
       return {
@@ -3645,7 +3696,7 @@ https://admin.example.com</textarea></div>
       const existingIndex = scanHistory.findIndex((item) => `${item.started || ''}|${item.scan_name || ''}|${item.target || ''}` === key);
       if (existingIndex >= 0) scanHistory[existingIndex] = entry;
       else scanHistory.unshift(entry);
-      scanHistory.sort((a, b) => (historyEntryDate(b)?.getTime() || 0) - (historyEntryDate(a)?.getTime() || 0));
+      syncRecentScansFromHistory();
     }
 
     function historyToRecentScanRow(entry) {
@@ -3665,9 +3716,7 @@ https://admin.example.com</textarea></div>
       scanHistory = [...entries]
         .filter((entry) => historyEntryDate(entry))
         .sort((a, b) => (historyEntryDate(b)?.getTime() || 0) - (historyEntryDate(a)?.getTime() || 0));
-      if (scanHistory.length) {
-        recentScans.splice(0, recentScans.length, ...scanHistory.slice(0, 8).map(historyToRecentScanRow));
-      }
+      syncRecentScansFromHistory();
       updateDashboardStats();
       renderScanComparison();
       renderAffectedHosts();
@@ -3874,7 +3923,6 @@ https://admin.example.com</textarea></div>
       }
 
       mergeHistoryEntry(reportHistoryEntry(report));
-      recentScans.splice(0, recentScans.length, ...scanHistory.slice(0, 8).map(historyToRecentScanRow));
       updateDashboardStats();
       renderScanComparison();
       renderAffectedHosts();
@@ -3907,9 +3955,9 @@ https://admin.example.com</textarea></div>
     }
 
     function renderStaticTables() {
-      document.querySelector('[data-recent-scans]').innerHTML = recentScans.map((row) => `
+      document.querySelector('[data-recent-scans]').innerHTML = recentScans.length ? recentScans.map((row) => `
         <tr><td class="white">${escapeHtml(row[0])}</td><td>${escapeHtml(row[1])}</td><td><span class="tag">${escapeHtml(row[2])}</span></td><td>${escapeHtml(row[3])}</td><td>${escapeHtml(row[4])}</td><td><span class="tag ${row[5] === 'Running' ? 'running' : 'status'}">${escapeHtml(row[5])}</span></td><td>${row[6].map((tag) => `<span class="tag ${sevClass(tag)}">${escapeHtml(tag)}</span>`).join(' ')}</td><td><a class="link" data-page="results">View</a></td></tr>
-      `).join('');
+      `).join('') : '<tr><td colspan="8" class="subtle">No scan history yet. Run a scan to add results here.</td></tr>';
 
       renderResultsTable();
 
@@ -4244,7 +4292,6 @@ https://admin.example.com</textarea></div>
       const summary = report.summary || {};
       if (report.scan && report.scan.name) {
         mergeHistoryEntry(reportHistoryEntry({ ...report, summary }));
-        recentScans.splice(0, recentScans.length, ...scanHistory.slice(0, 8).map(historyToRecentScanRow));
         updateDashboardStats();
         renderAffectedHosts();
         renderVulnerabilityTrendChart();
