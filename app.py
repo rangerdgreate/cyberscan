@@ -18,6 +18,9 @@ from datetime import datetime, timedelta
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 from urllib.parse import unquote, urlparse
+from dotenv import load_dotenv
+
+load_dotenv()
 
 import requests
 from cyberscan import (
