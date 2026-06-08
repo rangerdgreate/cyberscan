@@ -5,7 +5,7 @@
     <div class="brand dark"><span class="brand-mark">CS</span><span>CyberScan</span></div>
     <div>
       <h1>Verification sent</h1>
-      <p class="muted">Check your email for the verification link. In local demo mode, use the button below.</p>
+      <p class="muted">Check your email inbox for the verification link before creating your CyberScan account.</p>
     </div>
     {% if development_mode %}
       <p class="warning-note">Local capstone mode is enabled, so no email inbox is required.</p>
@@ -14,7 +14,7 @@
       {% endif %}
       <p class="muted">CyberScan keeps this step to confirm account ownership during the registration flow.</p>
     {% else %}
-      <p class="warning-note">Open the verification link within 15 minutes.</p>
+      <p class="warning-note">Open the verification link within 15 minutes. Check spam or promotions if it does not appear.</p>
     {% endif %}
     <form class="form-stack" action="{{ url_for('resend_verification') }}" method="post">
       <input name="email" type="hidden" value="{{ email }}">

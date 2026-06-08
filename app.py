@@ -1199,7 +1199,7 @@ def send_otp_email(email, code):
     )
 
 
-def send_verification_email(email, verification_link):
+def send_verification_email(email, verification_link, allow_dev_link=False):
     subject = "CyberScan Email Verification"
     body = (
         "Welcome to CyberScan.\n\n"
@@ -1209,7 +1209,7 @@ def send_verification_email(email, verification_link):
         "If you did not request this account, ignore this email."
     )
     print_mail_debug()
-    if DEV_MODE:
+    if DEV_MODE and allow_dev_link:
         print_dev_verification_link(verification_link)
         return True
 
@@ -1242,6 +1242,11 @@ def send_verification_email(email, verification_link):
 
 def send_account_verification_email(email, verification_link):
     return send_verification_email(email, verification_link)
+
+
+def local_verification_links_allowed(base_url):
+    host = urlparse(str(base_url or "")).hostname or ""
+    return DEV_MODE and host.lower() in {"127.0.0.1", "localhost", "::1"}
 
 
 def start_email_verification(email, base_url):
@@ -1278,14 +1283,17 @@ def start_email_verification(email, base_url):
         "created_at": now,
         "last_sent_at": now,
     }
+    verification_link = f"{(base_url or BASE_URL).rstrip('/')}/verify-email/{token}"
+    allow_dev_link = local_verification_links_allowed(base_url or BASE_URL)
+    sent = send_verification_email(email, verification_link, allow_dev_link=allow_dev_link)
+    if not sent and not allow_dev_link:
+        raise ValueError("Verification email could not be sent. Check Gmail SMTP settings on Render: MAIL_USERNAME, MAIL_PASSWORD app password, MAIL_DEFAULT_SENDER, and DEV_MODE=False.")
     if collection is not None:
         collection.insert_one(document)
     else:
         verifications = load_file_verifications()
         verifications.append(document)
         save_file_verifications(verifications)
-    verification_link = f"{(base_url or BASE_URL).rstrip('/')}/verify-email/{token}"
-    sent = send_verification_email(email, verification_link)
     if not sent:
         print_dev_verification_link(verification_link)
         write_audit_log("registration_verification_local_link", {"email": email, "delivery": "local_link"})
@@ -1294,8 +1302,8 @@ def start_email_verification(email, base_url):
     return {
         "email": email,
         "sent": True,
-        "development_mode": DEV_MODE or not sent,
-        "development_link": verification_link if DEV_MODE or not sent else "",
+        "development_mode": allow_dev_link or not sent,
+        "development_link": verification_link if allow_dev_link or not sent else "",
     }
 
 
