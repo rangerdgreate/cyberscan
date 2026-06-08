@@ -87,6 +87,8 @@ TRIAGE_PATH = REPORTS_DIR / "triage.json"
 AUDIT_LOG_PATH = DATA_DIR / "audit_log.jsonl"
 REPORT_SHARES_PATH = DATA_DIR / "report_shares.json"
 SECURITY_PATH = DATA_DIR / "security.json"
+USERS_PATH = DATA_DIR / "users.json"
+EMAIL_VERIFICATIONS_PATH = DATA_DIR / "email_verifications.json"
 MONGO_URI = os.environ.get("MONGO_URI", os.environ.get("CYBERSCAN_MONGO_URI", "")).strip()
 MONGO_URI_DB = (urlparse(MONGO_URI).path or "").lstrip("/") if MONGO_URI else ""
 MONGO_DB_NAME = os.environ.get("CYBERSCAN_MONGO_DB", os.environ.get("MONGO_DB", MONGO_URI_DB or "cyberscan_db")).strip() or "cyberscan_db"
@@ -609,6 +611,38 @@ def save_triage_state():
         json.dump(STATE["triage"], file, indent=2)
 
 
+def load_json_file(path, default):
+    if not path.exists():
+        return default
+    try:
+        with open(path, "r", encoding="utf-8") as file:
+            data = json.load(file)
+        return data if isinstance(data, type(default)) else default
+    except Exception:
+        return default
+
+
+def save_json_file(path, data):
+    with open(path, "w", encoding="utf-8") as file:
+        json.dump(json_ready(data), file, indent=2)
+
+
+def load_file_users():
+    return load_json_file(USERS_PATH, [])
+
+
+def save_file_users(users):
+    save_json_file(USERS_PATH, users)
+
+
+def load_file_verifications():
+    return load_json_file(EMAIL_VERIFICATIONS_PATH, [])
+
+
+def save_file_verifications(verifications):
+    save_json_file(EMAIL_VERIFICATIONS_PATH, verifications)
+
+
 def write_audit_log(action, details=None, actor=None):
     actor = actor or owner_email()
     now = datetime.now()
@@ -852,6 +886,10 @@ def email_matches_owner(email):
 def find_user_account(email):
     collection = mongo_collection("users")
     if collection is None:
+        normalized = normalize_email(email)
+        for user in load_file_users():
+            if normalize_email(user.get("email")) == normalized:
+                return user
         return None
     try:
         return collection.find_one({"email_normalized": normalize_email(email)}, {"_id": 0})
@@ -863,6 +901,10 @@ def find_user_account(email):
 def find_user_by_username(username):
     collection = mongo_collection("users")
     if collection is None:
+        normalized = str(username or "").strip().lower()
+        for user in load_file_users():
+            if str(user.get("username_normalized") or user.get("username") or "").strip().lower() == normalized:
+                return user
         return None
     try:
         return collection.find_one({"username_normalized": str(username or "").strip().lower()}, {"_id": 0})
@@ -946,7 +988,28 @@ def create_user_account(email, password, name="User", username="", email_verifie
         raise ValueError("That username is already taken.")
     collection = mongo_collection("users")
     if collection is None:
-        raise ValueError("MongoDB is required for multiple user accounts.")
+        account = {
+            "id": secrets.token_urlsafe(10),
+            "email": str(email).strip(),
+            "email_normalized": normalize_email(email),
+            "name": str(name or "User").strip() or "User",
+            "username": username,
+            "username_normalized": username.lower(),
+            "role": "user",
+            "password_hash": generate_password_hash(password),
+            "email_verified": bool(email_verified),
+            "is_active": True,
+            "created": iso_now(),
+            "created_at": datetime.now().isoformat(timespec="seconds"),
+            "updated": iso_now(),
+        }
+        users = load_file_users()
+        users.append(account)
+        save_file_users(users)
+        save_user_state(account["email"], empty_account_state())
+        write_audit_log("user_registered", {"email": account["email"], "role": "user", "password_stored": False})
+        account.pop("password_hash", None)
+        return account
     account = {
         "email": str(email).strip(),
         "email_normalized": normalize_email(email),
@@ -974,7 +1037,15 @@ def update_user_password(email, password):
         raise ValueError(error)
     collection = mongo_collection("users")
     if collection is None:
-        raise ValueError("MongoDB is required for user accounts.")
+        users = load_file_users()
+        for user in users:
+            if normalize_email(user.get("email")) == normalize_email(email):
+                user["password_hash"] = generate_password_hash(password)
+                user["updated"] = iso_now()
+                save_file_users(users)
+                write_audit_log("user_password_reset", {"email": email, "password_stored": False}, actor=email)
+                return
+        raise ValueError("Account was not found.")
     result = collection.update_one(
         {"email_normalized": normalize_email(email)},
         {"$set": {"password_hash": generate_password_hash(password), "updated": iso_now()}},
@@ -1179,20 +1250,26 @@ def start_email_verification(email, base_url):
         raise ValueError(email_error)
     if email_matches_owner(email) or find_user_account(email):
         raise ValueError("An account already exists for that email.")
-    collection = mongo_collection("pending_email_verifications")
-    if collection is None:
-        raise ValueError("MongoDB is required for email verification.")
     email = str(email).strip()
     normalized = normalize_email(email)
-    latest = collection.find_one({"email_normalized": normalized, "used": False}, sort=[("created_at", DESCENDING)])
+    collection = mongo_collection("pending_email_verifications")
+    latest = None
+    if collection is not None:
+        latest = collection.find_one({"email_normalized": normalized, "used": False}, sort=[("created_at", DESCENDING)])
+    else:
+        pending = [item for item in load_file_verifications() if item.get("email_normalized") == normalized and not item.get("used")]
+        pending.sort(key=lambda item: item.get("created_at", ""), reverse=True)
+        latest = pending[0] if pending else None
     if latest:
         created = latest.get("last_sent_at") or latest.get("created_at")
+        if isinstance(created, str):
+            created = parse_iso(created)
         if created and datetime.now() - created < timedelta(seconds=60):
             raise ValueError("Please wait 60 seconds before requesting another verification email.")
     token = secrets.token_urlsafe(32)
     token_hash = verification_token_hash(token)
     now = datetime.now()
-    collection.insert_one({
+    document = {
         "email": email,
         "email_normalized": normalized,
         "token_hash": token_hash,
@@ -1200,7 +1277,13 @@ def start_email_verification(email, base_url):
         "used": False,
         "created_at": now,
         "last_sent_at": now,
-    })
+    }
+    if collection is not None:
+        collection.insert_one(document)
+    else:
+        verifications = load_file_verifications()
+        verifications.append(document)
+        save_file_verifications(verifications)
     verification_link = f"{(base_url or BASE_URL).rstrip('/')}/verify-email/{token}"
     sent = send_verification_email(email, verification_link)
     if not sent:
@@ -1211,22 +1294,39 @@ def start_email_verification(email, base_url):
     return {
         "email": email,
         "sent": True,
-        "development_mode": True,
-        "development_link": verification_link,
+        "development_mode": DEV_MODE or not sent,
+        "development_link": verification_link if DEV_MODE or not sent else "",
     }
 
 
 def consume_email_verification(token):
     collection = mongo_collection("pending_email_verifications")
-    if collection is None:
-        raise ValueError("MongoDB is required for email verification.")
-    document = collection.find_one({"token_hash": verification_token_hash(token), "used": False}, {"_id": 0})
+    token_hash = verification_token_hash(token)
+    document = None
+    if collection is not None:
+        document = collection.find_one({"token_hash": token_hash, "used": False}, {"_id": 0})
+    else:
+        for item in load_file_verifications():
+            if item.get("token_hash") == token_hash and not item.get("used"):
+                document = item
+                break
     if not document:
         raise ValueError("Verification link is invalid or has already been used.")
     expires = document.get("expires_at")
+    if isinstance(expires, str):
+        expires = parse_iso(expires)
     if not expires or expires < datetime.now():
         raise ValueError("Verification link has expired.")
-    collection.update_one({"token_hash": verification_token_hash(token)}, {"$set": {"used": True, "used_at": datetime.now()}})
+    if collection is not None:
+        collection.update_one({"token_hash": token_hash}, {"$set": {"used": True, "used_at": datetime.now()}})
+    else:
+        verifications = load_file_verifications()
+        for item in verifications:
+            if item.get("token_hash") == token_hash:
+                item["used"] = True
+                item["used_at"] = datetime.now().isoformat(timespec="seconds")
+                break
+        save_file_verifications(verifications)
     return document["email"]
 
 
@@ -1343,8 +1443,33 @@ def valid_object_id(value):
 def create_default_admin():
     users = mongo_collection("users")
     if users is None:
-        print("[!] MongoDB unavailable; default admin account was not created.")
-        return False
+        existing = [user for user in load_file_users() if normalize_role(user.get("role")) == "admin"]
+        if existing:
+            return False
+        if not ADMIN_EMAIL or not ADMIN_PASSWORD:
+            print("[!] ADMIN_EMAIL and ADMIN_PASSWORD are required to create the default admin account.")
+            return False
+        now = datetime.now().isoformat(timespec="seconds")
+        file_users = load_file_users()
+        file_users.append({
+            "id": secrets.token_urlsafe(10),
+            "email": ADMIN_EMAIL,
+            "email_normalized": normalize_email(ADMIN_EMAIL),
+            "username": ADMIN_USERNAME,
+            "username_normalized": ADMIN_USERNAME.lower(),
+            "name": ADMIN_USERNAME,
+            "password_hash": generate_password_hash(ADMIN_PASSWORD),
+            "email_verified": True,
+            "role": "admin",
+            "is_active": True,
+            "created": now,
+            "created_at": now,
+            "updated": now,
+        })
+        save_file_users(file_users)
+        write_audit_log("default_admin_created", {"email": ADMIN_EMAIL, "username": ADMIN_USERNAME}, actor=ADMIN_EMAIL)
+        print(f"[+] Default file-based admin account created: {ADMIN_EMAIL}", flush=True)
+        return True
     existing = users.find_one({"role": {"$in": ["admin", "Admin"]}})
     if existing:
         return False
@@ -1374,7 +1499,7 @@ def create_default_admin():
 def all_users():
     users = mongo_collection("users")
     if users is None:
-        return []
+        return [{key: value for key, value in user.items() if key != "password_hash"} for user in load_file_users()]
     return [json_ready(user) for user in users.find({}, {"password_hash": 0}).sort("created_at", DESCENDING)]
 
 
@@ -2642,7 +2767,7 @@ def create_flask_app():
         if email_error:
             return render_template("verification_error.html", **page_context("login", "Verification Error", "Verification Error", "Enter a valid email address.", error=email_error)), 400
         try:
-            result = start_email_verification(email, BASE_URL)
+            result = start_email_verification(email, request.url_root.rstrip("/"))
         except ValueError as exc:
             return render_template("verification_error.html", **page_context("login", "Verification Error", "Verification Error", "Request a new email verification link.", error=str(exc))), 400
         except Exception as exc:
@@ -2723,7 +2848,7 @@ def create_flask_app():
     def resend_verification():
         email = (request.form.get("email") or session.get("pending_registration_email") or "").strip()
         try:
-            result = start_email_verification(email, BASE_URL)
+            result = start_email_verification(email, request.url_root.rstrip("/"))
         except ValueError as exc:
             return render_template("verification_error.html", **page_context(
                 "login",
