@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="admin-layout">
+  <aside class="admin-sidebar"><span class="admin-badge">Admin</span>{% for label, endpoint in admin_nav %}<a href="{{ url_for(endpoint) }}">{{ label }}</a>{% endfor %}</aside>
+  <div class="admin-main">
+    {% if message %}<p class="form-message">{{ message }}</p>{% endif %}
+    <article class="card">
+      <div class="section-head"><h2>System Settings</h2><span class="badge info">Safe defaults</span></div>
+      <form class="form-stack" method="post" action="{{ url_for('admin_settings_save') }}">
+        <div class="two-col">
+          <label>Default Max Pages<input name="default_max_pages" type="number" min="1" value="{{ settings.default_max_pages }}"></label>
+          <label>Default Rate Limit<input name="default_rate_limit" type="number" min="1" value="{{ settings.default_rate_limit }}"></label>
+        </div>
+        <label>Default Scan Type<select name="default_scan_type">
+          <option value="light" {% if settings.default_scan_type == "light" %}selected{% endif %}>Light</option>
+          <option value="deep" {% if settings.default_scan_type == "deep" %}selected{% endif %}>Deep</option>
+          <option value="authenticated" {% if settings.default_scan_type == "authenticated" %}selected{% endif %}>Authenticated</option>
+        </select></label>
+        <div class="two-col">
+          <label>Maximum URL Fuzzer Requests<input name="max_fuzzer_requests" type="number" min="1" value="{{ settings.max_fuzzer_requests }}"></label>
+          <label>Maximum Password Audit Attempts<input name="max_password_attempts" type="number" min="1" value="{{ settings.max_password_attempts }}"></label>
+        </div>
+        <label class="check-line"><input name="registration_enabled" type="checkbox" {% if settings.registration_enabled %}checked{% endif %}> Enable user registration</label>
+        <label class="check-line"><input name="email_verification_enabled" type="checkbox" {% if settings.email_verification_enabled %}checked{% endif %}> Enable email verification</label>
+        <label>Report Output Folder<input name="report_output_folder" value="{{ settings.report_output_folder }}"></label>
+        <label>Authorized Testing Reminder<textarea name="authorization_reminder">{{ settings.authorization_reminder }}</textarea></label>
+        <button class="btn primary" type="submit">Save System Settings</button>
+      </form>
+    </article>
+  </div>
+</section>
+{% endblock %}

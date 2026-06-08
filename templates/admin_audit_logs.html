@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="admin-layout">
+  <aside class="admin-sidebar"><span class="admin-badge">Admin</span>{% for label, endpoint in admin_nav %}<a href="{{ url_for(endpoint) }}">{{ label }}</a>{% endfor %}</aside>
+  <div class="admin-main">
+    <article class="card">
+      <div class="section-head"><h2>Audit Logs</h2><span class="badge info">Accountability</span></div>
+      <div class="admin-filter-bar">
+        <input type="search" placeholder="Filter by action, username, date..." data-admin-table-filter>
+      </div>
+      <div class="table-wrap"><table class="admin-table" data-admin-table><thead><tr><th>Date and Time</th><th>Username</th><th>Action</th><th>Details</th><th>IP Address</th></tr></thead><tbody>
+        {% for log in logs %}
+        <tr>
+          <td>{{ log.created_at or log.timestamp }}</td>
+          <td>{{ log.username or log.actor }}</td>
+          <td>{{ log.action }}</td>
+          <td>{{ log.details }}</td>
+          <td>{{ log.ip_address or "-" }}</td>
+        </tr>
+        {% else %}
+        <tr><td colspan="5">No audit logs yet.</td></tr>
+        {% endfor %}
+      </tbody></table></div>
+    </article>
+  </div>
+</section>
+{% endblock %}

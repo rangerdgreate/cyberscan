@@ -10,7 +10,9 @@ from http.server import ThreadingHTTPServer
 
 import app
 from cyberscan import CyberScan
-from app import compare_report_findings, password_is_valid, verify_post_origin
+from app import compare_report_findings, password_audit_check, password_is_valid, update_owner_password, verify_post_origin
+
+TEST_OWNER_EMAIL = "owner@example.test"
 
 
 class FakeResponse:
@@ -118,6 +120,77 @@ class CyberScanCoreTests(unittest.TestCase):
 
         self.assertIn("CWE", csv_text)
         self.assertIn("Confidence", csv_text)
+
+    def test_report_includes_virustotal_style_analysis_profile(self):
+        scanner = CyberScan("https://example.test")
+        scanner.add_result(
+            "Missing Security Header: Content-Security-Policy",
+            "High",
+            "A03: Injection",
+            "Content Security Policy is missing.",
+            "Add a strong Content-Security-Policy header.",
+            confidence="High",
+        )
+
+        report = scanner.build_report_data()
+
+        self.assertIn("analysis", report)
+        self.assertEqual(report["analysis"]["risk_score"], 18)
+        self.assertEqual(report["analysis"]["risk_grade"], "High")
+        self.assertEqual(report["analysis"]["detection_ratio"]["flagged"], 1)
+        self.assertIn("No brute force", " ".join(report["analysis"]["safe_scope"]))
+
+    def test_password_audit_refuses_without_authorization(self):
+        result = password_audit_check(
+            "https://example.test/login",
+            "admin",
+            ["password123"],
+            5,
+            0,
+            False,
+        )
+
+        self.assertEqual(result["status"], "skipped")
+        self.assertEqual(result["attempt_count"], 0)
+        self.assertFalse(result["weak_credential_detected"])
+
+    def test_password_audit_is_limited_and_masks_evidence(self):
+        result = password_audit_check(
+            "https://example.test/login",
+            "admin",
+            ["not-this", "password123", "another"],
+            2,
+            0,
+            True,
+        )
+
+        self.assertEqual(result["status"], "detected")
+        self.assertEqual(result["attempt_count"], 2)
+        self.assertEqual(result["attempt_limit"], 2)
+        self.assertNotIn("password123", result["evidence"])
+        self.assertIn("****", result["evidence"])
+
+    def test_owner_password_reset_hash_updates_validation(self):
+        original_hash = app.SECURITY_STATE.get("owner_password_hash", "")
+        original_updated = app.SECURITY_STATE.get("updated")
+        try:
+            with patch("app.save_security_state"), patch("app.write_audit_log"):
+                update_owner_password("NewOwner123")
+            self.assertTrue(password_is_valid("NewOwner123"))
+            self.assertFalse(password_is_valid("password"))
+        finally:
+            app.SECURITY_STATE["owner_password_hash"] = original_hash
+            app.SECURITY_STATE["updated"] = original_updated
+
+    def test_mongo_disabled_without_uri(self):
+        original_db = app.MONGO_DB
+        try:
+            app.MONGO_DB = None
+            self.assertFalse(app.mongo_enabled())
+            self.assertIsNone(app.mongo_collection("scans"))
+            self.assertIsNone(app.mongo_load_single("app_state", "history"))
+        finally:
+            app.MONGO_DB = original_db
 
     def test_report_includes_scan_coverage_summary(self):
         scanner = CyberScan("https://example.test", scan_type="Quick", max_pages=2)
@@ -230,8 +303,9 @@ class CyberScanCoreTests(unittest.TestCase):
         self.assertFalse(scanner._path_in_scope("https://example.test/api/private/secrets"))
 
     def test_password_check_supports_plain_and_hash_configuration(self):
-        self.assertTrue(password_is_valid("password"))
-        with patch("app.OWNER_PASSWORD_HASH", "03f99ad2bb8f470ab4a6b65dd51dca8f63c4a36d52a66b22d706c14dbfec5983"):
+        with patch("app.OWNER_PASSWORD", "password"), patch.dict(app.SECURITY_STATE, {"owner_password_hash": ""}):
+            self.assertTrue(password_is_valid("password"))
+        with patch("app.OWNER_PASSWORD_HASH", "03f99ad2bb8f470ab4a6b65dd51dca8f63c4a36d52a66b22d706c14dbfec5983"), patch.dict(app.SECURITY_STATE, {"owner_password_hash": ""}):
             self.assertTrue(password_is_valid("owner-secret"))
             self.assertFalse(password_is_valid("password"))
 
@@ -245,62 +319,63 @@ class CyberScanCoreTests(unittest.TestCase):
         self.assertFalse(verify_post_origin(FakeHandler({"Origin": "https://evil.example"})))
 
     def test_login_endpoint_rejects_wrong_password(self):
-        status, payload = self.run_test_server_request(
-            "POST",
-            "/api/login",
-            {"email": "owner@company.com", "password": "wrong"},
-        )
+        with patch.dict(app.SECURITY_STATE, {"owner_email": TEST_OWNER_EMAIL, "owner_password_hash": ""}), patch("app.OWNER_PASSWORD", "password"):
+            status, payload = self.run_test_server_request(
+                "POST",
+                "/api/login",
+                {"email": TEST_OWNER_EMAIL, "password": "wrong"},
+            )
 
         self.assertEqual(status, 401)
         self.assertIn("Invalid owner credentials", payload["error"])
 
-    def test_login_endpoint_creates_temporary_otp_without_smtp(self):
-        status, payload = self.run_test_server_request(
-            "POST",
-            "/api/login",
-            {"email": "owner@company.com", "password": "password"},
-        )
-
-        self.assertEqual(status, 200)
-        self.assertTrue(payload["otp_required"])
-        self.assertIn("challenge_id", payload)
-        self.assertEqual(payload["delivery"], "temporary")
-        self.assertRegex(payload["demo_otp"], r"^\d{6}$")
-
-    def test_login_endpoint_marks_email_delivery_when_smtp_sends(self):
-        with patch("app.send_otp_email", return_value=True):
+    def test_login_endpoint_accepts_configured_owner(self):
+        with patch.dict(app.SECURITY_STATE, {"owner_email": TEST_OWNER_EMAIL, "owner_password_hash": ""}), patch("app.OWNER_PASSWORD", "password"):
             status, payload = self.run_test_server_request(
                 "POST",
                 "/api/login",
-                {"email": "owner@company.com", "password": "password"},
+                {"email": TEST_OWNER_EMAIL, "password": "password"},
             )
 
         self.assertEqual(status, 200)
-        self.assertEqual(payload["delivery"], "email")
-        self.assertIsNone(payload["demo_otp"])
+        self.assertFalse(payload["otp_required"])
+        self.assertEqual(payload["email"], TEST_OWNER_EMAIL)
+        self.assertEqual(payload["redirect"], "/dashboard")
+
+    def test_login_endpoint_accepts_blank_owner_email_fallback(self):
+        with patch.dict(app.SECURITY_STATE, {"owner_email": TEST_OWNER_EMAIL, "owner_password_hash": ""}), patch("app.OWNER_PASSWORD", "password"):
+            status, payload = self.run_test_server_request(
+                "POST",
+                "/api/login",
+                {"email": "", "password": "password"},
+            )
+
+        self.assertEqual(status, 200)
+        self.assertEqual(payload["email"], TEST_OWNER_EMAIL)
 
     def test_verify_otp_endpoint_creates_session(self):
         original_otps = app.PENDING_OTPS.copy()
         challenge_id = "unit-challenge"
         code = "123456"
         app.PENDING_OTPS[challenge_id] = {
-            "email": "owner@company.com",
+            "email": TEST_OWNER_EMAIL,
             "code_hash": app.hashlib.sha256(code.encode("utf-8")).hexdigest(),
             "expires_at": app.datetime.now() + app.timedelta(minutes=5),
             "attempts": 0,
         }
         try:
-            status, payload = self.run_test_server_request(
-                "POST",
-                "/api/verify-otp",
-                {"challenge_id": challenge_id, "code": code},
-            )
+            with patch.dict(app.SECURITY_STATE, {"owner_email": TEST_OWNER_EMAIL, "owner_password_hash": ""}):
+                status, payload = self.run_test_server_request(
+                    "POST",
+                    "/api/verify-otp",
+                    {"challenge_id": challenge_id, "code": code},
+                )
         finally:
             app.PENDING_OTPS.clear()
             app.PENDING_OTPS.update(original_otps)
 
         self.assertEqual(status, 200)
-        self.assertEqual(payload["current_user"]["email"], "owner@company.com")
+        self.assertEqual(payload["current_user"]["email"], TEST_OWNER_EMAIL)
 
     def test_report_generation_endpoint_returns_template_entry(self):
         with tempfile.TemporaryDirectory() as temp_dir:

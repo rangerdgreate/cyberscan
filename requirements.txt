@@ -1,2 +1,8 @@
 requests
 beautifulsoup4
+Flask
+pymongo
+Werkzeug
+python-dotenv
+Flask-Mail
+dnspython

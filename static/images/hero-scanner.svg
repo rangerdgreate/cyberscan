@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 520" role="img" aria-labelledby="title desc">
+  <title id="title">CyberScan scanner dashboard illustration</title>
+  <desc id="desc">Dark cybersecurity scanner interface with glowing scan cards.</desc>
+  <defs>
+    <linearGradient id="g" x1="0" x2="1" y1="0" y2="1">
+      <stop offset="0" stop-color="#38bdf8"/>
+      <stop offset="1" stop-color="#2563eb"/>
+    </linearGradient>
+    <filter id="glow"><feGaussianBlur stdDeviation="6" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+  </defs>
+  <rect width="720" height="520" rx="28" fill="#06111f"/>
+  <path d="M0 94h720M0 188h720M0 282h720M0 376h720M120 0v520M240 0v520M360 0v520M480 0v520M600 0v520" stroke="#38bdf8" stroke-opacity=".08"/>
+  <rect x="80" y="78" width="560" height="364" rx="18" fill="#0b1525" stroke="#38bdf8" stroke-opacity=".32"/>
+  <rect x="104" y="104" width="512" height="54" rx="10" fill="#07111f"/>
+  <circle cx="132" cy="131" r="7" fill="#38bdf8"/><circle cx="154" cy="131" r="7" fill="#f59e0b"/><circle cx="176" cy="131" r="7" fill="#22c55e"/>
+  <rect x="104" y="186" width="168" height="96" rx="12" fill="#101d31" stroke="#38bdf8" stroke-opacity=".22"/>
+  <rect x="296" y="186" width="320" height="96" rx="12" fill="#07111f" stroke="#38bdf8" stroke-opacity=".22"/>
+  <rect x="104" y="308" width="512" height="86" rx="12" fill="#07111f" stroke="#38bdf8" stroke-opacity=".22"/>
+  <path d="M128 238h116M320 224h250M320 250h180M128 342h430M128 366h320" stroke="#94a3b8" stroke-width="10" stroke-linecap="round"/>
+  <path d="M128 208h84M320 206h130M128 326h96" stroke="#38bdf8" stroke-width="10" stroke-linecap="round" filter="url(#glow)"/>
+  <circle cx="528" cy="250" r="34" fill="url(#g)" filter="url(#glow)"/>
+  <path d="M528 228l22 10v18c0 20-13 32-22 36-9-4-22-16-22-36v-18z" fill="#02050d"/>
+</svg>

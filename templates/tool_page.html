@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="split tool-runner-layout">
+  <article class="card">
+    <div class="section-head">
+      <div>
+        <span class="eyebrow">Safe Tool</span>
+        <h2>{{ tool_name }}</h2>
+        <p class="muted">{{ tool_description }}</p>
+      </div>
+      <span class="badge info">Prototype</span>
+    </div>
+    <form class="form-stack" data-tool-runner-form data-selected-tool="{{ selected_tool }}">
+      <input type="hidden" name="selected_tool" value="{{ selected_tool }}">
+      <ol class="setup-steps" aria-label="Tool setup steps">
+        <li><span>1</span><strong>Enter target</strong><small>Use a site, host, or domain you are allowed to test.</small></li>
+        <li><span>2</span><strong>Review options</strong><small>Keep the recommended limits for a safe beginner run.</small></li>
+        <li><span>3</span><strong>Run tool</strong><small>Results are saved for reports and review.</small></li>
+      </ol>
+      <label data-tool-field="target">Target URL / Host / Domain <span class="required-text">Required</span><input name="target" type="text" placeholder="https://example.com" required><small>Example: https://example.com or example.com</small></label>
+
+      <section class="audit-panel" data-tool-options>
+        <div class="section-head"><h2>Tool Options</h2><span class="badge info">Controlled</span></div>
+        <label data-tool-field="ports">Port List<input name="tool_ports" placeholder="80,443,8080,8443"><small>Safe TCP connection checks only. No service enumeration or exploitation.</small></label>
+        <label data-tool-field="wordlist">Wordlist / Host List<textarea name="tool_wordlist" placeholder="admin&#10;login&#10;api&#10;docs"></textarea><small>Use a small controlled list. Large brute-force lists are not allowed.</small></label>
+        <div class="two-col">
+          <label data-tool-field="max_requests">Max Requests<input name="tool_max_requests" type="number" min="1" max="25" value="10"><small>Recommended: 10</small></label>
+          <label data-tool-field="delay">Delay Seconds<input name="tool_delay" type="number" min="0" max="5" step="0.1" value="0.5"><small>Recommended: 0.5 seconds</small></label>
+        </div>
+        <div class="two-col">
+          <label data-tool-field="timeout">Timeout Seconds<input name="tool_timeout" type="number" min="0.2" max="3" step="0.1" value="1"><small>Recommended: 1 second</small></label>
+          <label data-tool-field="scan_type">Scan Type<select name="scan_type"><option>light</option><option>deep</option><option>authenticated</option></select></label>
+        </div>
+        <label data-tool-field="username">Username<input name="tool_username" autocomplete="off"></label>
+        <label data-tool-field="passwords">Password List<textarea name="tool_password_list" placeholder="admin123&#10;password123&#10;changeme"></textarea></label>
+        <label data-tool-field="stop_success" class="check-line"><input name="tool_stop_on_success" type="checkbox" checked> Stop on success</label>
+      </section>
+
+      <label class="check-line"><input name="authorization_confirmed" type="checkbox" required> I confirm this target is owned by me or is within written testing scope.</label>
+      <div class="actions">
+        <button class="btn primary" type="submit">Run Tool</button>
+        <a class="btn" href="{{ url_for('tools_page') }}">All Tools</a>
+      </div>
+      <p class="form-message" data-tool-message></p>
+    </form>
+  </article>
+  <article class="card">
+    <h2>Safety Controls</h2>
+    <p class="warning-note">CyberScan does not run exploit payloads, bypasses, denial-of-service checks, credential stuffing, password spraying, or unlimited attempts.</p>
+    <p class="muted">If you are unsure, use the default limits and run the Website Scanner first.</p>
+    <div class="risk-grid">
+      <div><span>Mode</span><strong>Safe</strong></div>
+      <div><span>Storage</span><strong>MongoDB</strong></div>
+      <div><span>Output</span><strong>Findings</strong></div>
+    </div>
+  </article>
+</div>
+{% endblock %}

@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% block login %}
+<main class="login-layout">
+  <section class="login-card">
+    <div class="brand dark"><span class="brand-mark">CS</span><span>CyberScan</span></div>
+    <div>
+      <h1>Setup Gmail SMTP</h1>
+      <p class="muted">Enable real email verification and OTP delivery.</p>
+    </div>
+    <form class="form-stack" method="post" autocomplete="off">
+      <label>Admin Email<input name="admin_email" placeholder="owner@example.com" autocomplete="off" autocapitalize="none" spellcheck="false" required></label>
+      <label>Admin Password<span class="password-field"><input name="admin_password" type="password" autocomplete="new-password" data-lpignore="true" data-1p-ignore="true" required><button type="button" data-toggle-password>Show</button></span></label>
+      <div class="two-col">
+        <label>SMTP Host<input name="smtp_host" value="{{ settings.smtp_host or 'smtp.gmail.com' }}" autocomplete="off" required></label>
+        <label>SMTP Port<input name="smtp_port" type="number" value="{{ settings.smtp_port or 587 }}" required></label>
+      </div>
+      <label>Gmail Username<input name="smtp_username" value="{{ settings.smtp_username }}" placeholder="yourgmail@gmail.com" autocomplete="off" autocapitalize="none" spellcheck="false" required></label>
+      <label>Sender Email<input name="smtp_from" value="{{ settings.smtp_from or settings.smtp_username }}" placeholder="yourgmail@gmail.com" autocomplete="off" autocapitalize="none" spellcheck="false" required></label>
+      <label>Gmail App Password<span class="password-field"><input name="smtp_password" type="password" autocomplete="new-password" placeholder="16-character Gmail app password" data-lpignore="true" data-1p-ignore="true" required><button type="button" data-toggle-password>Show</button></span></label>
+      <label class="check-line"><input name="smtp_use_tls" type="checkbox" {% if settings.smtp_use_tls is not false %}checked{% endif %}> Use TLS for Gmail SMTP.</label>
+      <label class="check-line"><input name="smtp_use_ssl" type="checkbox" {% if settings.smtp_use_ssl %}checked{% endif %}> Use SSL for Gmail SMTP.</label>
+      <button class="btn primary" type="submit">Save SMTP</button>
+      {% if success %}<p class="form-message">{{ success }}</p>{% endif %}
+      {% if error %}<p class="form-message">{{ error }}</p>{% endif %}
+      <a class="btn" href="{{ url_for('login') }}">Back to Login</a>
+    </form>
+    <p class="warning-note">Use a Gmail App Password, not your normal Gmail password. With DEV_MODE=False, CyberScan sends a test email before saving.</p>
+  </section>
+  <section class="login-hero">
+    <span class="eyebrow">Real Email OTP</span>
+    <h2>CyberScan uses Gmail SMTP to send verification links and login codes.</h2>
+    <p>For Gmail, turn on 2-Step Verification, create an App Password, then paste the 16-character password here.</p>
+  </section>
+</main>
+{% endblock %}

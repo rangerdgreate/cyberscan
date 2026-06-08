@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+{% block login %}
+<main class="login-layout auth-layout">
+  <section class="login-card auth-card">
+    <div class="brand dark"><span class="brand-mark">CS</span><span>CyberScan</span></div>
+    <div>
+      <h1>Sign in to CyberScan</h1>
+      <p class="muted">Automated Web Vulnerability Scanner Built with Python</p>
+    </div>
+    <form class="form-stack" data-login-form autocomplete="off">
+      <label>Email<input name="email" placeholder="owner@example.com" autocomplete="off" autocapitalize="none" spellcheck="false"></label>
+      <label>Password<span class="password-field"><input name="password" type="password" autocomplete="new-password" data-lpignore="true" data-1p-ignore="true"><button type="button" data-toggle-password>Show</button></span></label>
+      <button class="btn primary" type="submit">Login</button>
+      <a class="btn" href="{{ url_for('register') }}">Create Account</a>
+      <button class="btn" type="button" data-show-reset>Forgot Password</button>
+      <a class="btn" href="/">Back to Main Page</a>
+      {% if registration_success %}<p class="form-message">{{ registration_success }}</p>{% endif %}
+      <p class="form-message" data-login-message></p>
+    </form>
+    <form class="form-stack hidden" data-otp-form>
+      <label>Verification Code<input name="code" inputmode="numeric" autocomplete="one-time-code"></label>
+      <button class="btn primary" type="submit">Verify Code</button>
+      <p class="form-message" data-otp-message></p>
+    </form>
+    <form class="form-stack hidden" data-reset-request-form autocomplete="off">
+      <label>Owner Gmail / Email<input name="email" placeholder="owner@example.com" autocomplete="off" autocapitalize="none" spellcheck="false"></label>
+      <button class="btn primary" type="submit">Send Reset Code</button>
+      <button class="btn" type="button" data-back-login>Back to Login</button>
+      <p class="form-message" data-reset-request-message></p>
+    </form>
+    <form class="form-stack hidden" data-reset-confirm-form autocomplete="off">
+      <label>Reset Code<input name="code" inputmode="numeric" autocomplete="one-time-code"></label>
+      <label>New Password<span class="password-field"><input name="new_password" type="password" autocomplete="new-password" data-lpignore="true" data-1p-ignore="true"><button type="button" data-toggle-password>Show</button></span></label>
+      <button class="btn primary" type="submit">Reset Password</button>
+      <p class="form-message" data-reset-confirm-message></p>
+    </form>
+    <p class="warning-note">Authorized scanning only. Use CyberScan only on websites you own or have written permission to test.</p>
+    <p class="muted">Passwords are not remembered or stored in the browser by CyberScan. Sign in with the account you created locally.</p>
+  </section>
+  <section class="login-hero">
+    <div class="login-hero-copy">
+      <span class="eyebrow">Description and Context</span>
+      <h2>CyberScan is an automated web vulnerability scanner built with Python.</h2>
+      <p>CyberScan is designed for educational and authorized security assessment. It helps users configure target websites, run safe non-destructive checks, review detected vulnerabilities, analyze evidence, track risk levels, and generate reports for capstone defense and responsible testing.</p>
+    </div>
+    <div class="auth-visual threat-console" aria-hidden="true">
+      <img src="{{ url_for('static', filename='images/security-shield.svg') }}" alt="">
+      <div class="console-header"><span></span><span></span><span></span></div>
+      <div class="console-grid">
+        <div><small>Risk Engine</small><strong>ONLINE</strong></div>
+        <div><small>Safe Mode</small><strong>ARMED</strong></div>
+        <div><small>Reports</small><strong>READY</strong></div>
+      </div>
+      <div class="scan-lines">
+        <i></i><i></i><i></i><i></i><i></i>
+      </div>
+      <div class="signal-row"><span>OWASP checks</span><b>Non-destructive</b></div>
+    </div>
+  </section>
+</main>
+{% endblock %}

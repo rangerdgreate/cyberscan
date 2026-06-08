@@ -1,0 +1,76 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="scan-progress-page" data-scan-progress-page data-scan-id="{{ request.args.get('scan_id', '') }}" data-result-url="{{ request.args.get('result_url', '') }}">
+  <header class="scan-progress-header">
+    <div>
+      <span class="eyebrow">Scanning in Progress</span>
+      <h2>CyberScan is performing safe and authorized checks on the selected target.</h2>
+      <p class="muted" data-current-task>Checking website security headers...</p>
+    </div>
+    <span class="badge status-running" data-scan-status>Running</span>
+  </header>
+
+  <div class="scan-progress-grid">
+    <article class="scan-animation-card">
+      <div class="scan-radar pulse-glow">
+        <div class="scan-radar-ring ring-one"></div>
+        <div class="scan-radar-ring ring-two"></div>
+        <div class="scan-radar-ring ring-three"></div>
+        <div class="scan-radar-beam rotating-beam"></div>
+        <span class="scan-radar-dot dot-one"></span>
+        <span class="scan-radar-dot dot-two"></span>
+        <span class="scan-radar-dot dot-three"></span>
+        <div class="scan-percent"><strong data-progress-percent>0%</strong><span>Complete</span></div>
+      </div>
+      <div class="scan-progress-bar"><i class="scan-progress-fill" data-progress-bar></i></div>
+      <p class="muted" data-estimated-completion>Estimated completion: calculating...</p>
+      <div class="actions scan-complete-actions" data-scan-complete-actions hidden>
+        <a class="btn primary" href="{{ url_for('results') }}">View Results</a>
+        <a class="btn" href="{{ url_for('reports') }}">Generate Report</a>
+        <a class="btn" href="{{ url_for('new_scan') }}">Start Another Scan</a>
+      </div>
+    </article>
+
+    <article class="card">
+      <div class="section-head"><h2>Scan Summary</h2><span class="badge info" data-progress-status>Running</span></div>
+      <div class="scan-stats-grid">
+        <div class="scan-stat-card"><span>Tool</span><strong data-active-tool>CyberScan Tool</strong></div>
+        <div class="scan-stat-card"><span>Target</span><strong data-progress-target>Active target</strong></div>
+        <div class="scan-stat-card"><span>Scan Type</span><strong data-scan-type>Safe scan</strong></div>
+        <div class="scan-stat-card"><span>Pages Crawled</span><strong data-pages-crawled>0</strong></div>
+        <div class="scan-stat-card"><span>Findings Detected</span><strong data-findings-detected>0</strong></div>
+        <div class="scan-stat-card"><span>Status</span><strong data-status-label>Running</strong></div>
+      </div>
+    </article>
+  </div>
+
+  <div class="split">
+    <article class="card">
+      <div class="section-head"><h2>Scan Steps</h2><span class="badge info">Live</span></div>
+      <ol class="scan-steps" data-scan-steps>
+        {% for step in [
+          "Initializing scan engine",
+          "Validating target permission",
+          "Checking website security headers",
+          "Checking SSL/TLS protection",
+          "Looking for insecure cookies",
+          "Checking website areas",
+          "Inspecting website forms",
+          "Checking common exposed paths",
+          "Running selected safe tool checks",
+          "Organizing finding results",
+          "Preparing your report",
+          "Scan completed"
+        ] %}
+        <li class="scan-step {% if loop.first %}active{% endif %}"><span>{{ loop.index }}</span><strong>{{ step }}</strong></li>
+        {% endfor %}
+      </ol>
+    </article>
+
+    <article class="card">
+      <div class="section-head"><h2>Activity Log</h2><span class="badge info">Safe</span></div>
+      <div class="scan-log" data-scan-log></div>
+    </article>
+  </div>
+</section>
+{% endblock %}

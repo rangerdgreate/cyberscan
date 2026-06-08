@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="admin-layout">
+  <aside class="admin-sidebar">
+    <span class="admin-badge">Admin</span>
+    {% for label, endpoint in admin_nav %}<a href="{{ url_for(endpoint) }}">{{ label }}</a>{% endfor %}
+  </aside>
+  <div class="admin-main">
+    {% if message %}<p class="form-message">{{ message }}</p>{% endif %}
+    <article class="card">
+      <div class="section-head"><h2>Manage Users</h2><span class="badge info">Role protected</span></div>
+      <div class="table-wrap"><table class="admin-table"><thead><tr><th>Username</th><th>Email</th><th>Role</th><th>Email Verified</th><th>Status</th><th>Created Date</th><th>Actions</th></tr></thead><tbody>
+        {% for user in users %}
+        {% set is_self = current_user and user.email == current_user.email %}
+        <tr>
+          <td>{{ user.username or user.name }}</td>
+          <td>{{ user.email }}</td>
+          <td><span class="admin-badge role-{{ user.role|lower }}">{{ user.role }}</span></td>
+          <td>{{ "Yes" if user.email_verified else "No" }}</td>
+          <td><span class="admin-badge {{ 'status-active' if user.is_active != false else 'status-disabled' }}">{{ "Active" if user.is_active != false else "Disabled" }}</span></td>
+          <td>{{ user.created_at or user.created }}</td>
+          <td>
+            <div class="admin-actions">
+              {% if user.is_active != false %}
+              <form method="post" action="{{ url_for('admin_disable_user', user_id=user._id) }}" onsubmit="return confirm('Disable this user account?')"><button class="btn danger" {% if is_self %}disabled{% endif %}>Disable user</button></form>
+              {% else %}
+              <form method="post" action="{{ url_for('admin_enable_user', user_id=user._id) }}"><button class="btn">Enable user</button></form>
+              {% endif %}
+              <form method="post" action="{{ url_for('admin_make_admin', user_id=user._id) }}" onsubmit="return confirm('Make this user an admin?')"><button class="btn">Make Admin</button></form>
+              <form method="post" action="{{ url_for('admin_make_user', user_id=user._id) }}" onsubmit="return confirm('Make this admin a normal user?')"><button class="btn" {% if is_self %}disabled{% endif %}>Make User</button></form>
+            </div>
+          </td>
+        </tr>
+        {% else %}
+        <tr><td colspan="7">No MongoDB users found.</td></tr>
+        {% endfor %}
+      </tbody></table></div>
+    </article>
+  </div>
+</section>
+{% endblock %}

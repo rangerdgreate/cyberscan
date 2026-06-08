@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% block content %}
+<article class="card">
+  <h2>Settings</h2>
+  <form class="form-stack" data-settings-form>
+    <div class="two-col">
+      <label>Default Max Pages<input name="default_max_pages" type="number" value="50"></label>
+      <label>Default Rate Limit<input name="default_rate_limit" type="number" value="5"></label>
+    </div>
+    <label>Report Output Folder<input name="report_folder" value="reports/"></label>
+    <label>Default Scan Type<select name="default_scan_type"><option>Light Scan</option><option>Deep Scan</option><option>Authenticated Scan</option></select></label>
+    <label class="check-line"><input name="email_verification" type="checkbox" checked> Enable email verification for account registration.</label>
+    <label class="check-line"><input name="authorized" type="checkbox" checked> I confirm CyberScan will be used only for authorized testing.</label>
+    <section class="audit-panel">
+      <h2>Commercial Readiness Controls</h2>
+      <div class="two-col">
+        <label>Workspace Name<input name="workspace_name" value="CyberScan Local Workspace"></label>
+        <label>License Mode<select name="license_mode"><option>Capstone Commercial Concept</option><option>Internal Security Team</option><option>Small Organization</option></select></label>
+      </div>
+      <label>Owner Account<input name="owner_account" value="{{ current_user.email if current_user else '' }}"></label>
+      <label class="check-line"><input name="audit_logging" type="checkbox" checked> Enable file-based audit logging for sign-in, scans, triage, reports, and share links.</label>
+      <label class="check-line"><input name="secure_reports" type="checkbox" checked> Use expiring secure report-share links.</label>
+      <label class="check-line"><input name="deployment_security" type="checkbox" checked> Require local deployment security review before production use.</label>
+    </section>
+    <button class="btn primary" type="submit">Save Settings</button>
+    <p class="form-message" data-settings-message></p>
+  </form>
+</article>
+{% endblock %}

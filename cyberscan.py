@@ -40,6 +40,487 @@ class Finding:
         return asdict(self)
 
 
+def mask_password(value):
+    text = str(value or "")
+    if not text:
+        return ""
+    if len(text) <= 2:
+        return "*" * len(text)
+    return f"{text[:1]}{'*' * max(2, len(text) - 2)}{text[-1:]}"
+
+
+def password_audit_check(
+    username,
+    password_list,
+    authorization_confirmed=False,
+    max_attempts=5,
+    delay_seconds=1,
+    stop_on_success=True,
+    validator=None,
+):
+    """Safe prototype for authorized password auditing.
+
+    The function requires explicit authorization, enforces a small attempt cap,
+    waits between attempts, masks password evidence, and only checks credentials
+    through a caller-provided validator for approved test environments.
+    """
+    if not authorization_confirmed:
+        raise ValueError("Password audit requires explicit written authorization confirmation.")
+
+    try:
+        attempt_limit = max(1, min(int(max_attempts), 10))
+    except (TypeError, ValueError):
+        attempt_limit = 5
+    try:
+        delay = max(0.0, min(float(delay_seconds), 5.0))
+    except (TypeError, ValueError):
+        delay = 1.0
+
+    candidates = [str(item).strip() for item in (password_list or []) if str(item).strip()]
+    attempts = []
+    success = False
+    tested = candidates[:attempt_limit]
+
+    for index, candidate in enumerate(tested, start=1):
+        if index > 1 and delay:
+            time.sleep(delay)
+        matched = bool(validator(username, candidate)) if callable(validator) else False
+        attempts.append({
+            "attempt": index,
+            "username": username,
+            "password_masked": mask_password(candidate),
+            "matched": matched,
+        })
+        if matched:
+            success = True
+            if stop_on_success:
+                break
+
+    return {
+        "authorized": True,
+        "safe_prototype": True,
+        "attempt_limit": attempt_limit,
+        "attempts_made": len(attempts),
+        "delay_seconds": delay,
+        "stop_on_success": bool(stop_on_success),
+        "success": success,
+        "evidence": attempts,
+        "note": "Passwords are masked. No unlimited attempts, password spraying, bypass, or credential stuffing behavior is included.",
+    }
+
+
+def _finding(severity, title, affected_url, evidence, impact, recommendation, status="Open"):
+    return {
+        "severity": severity,
+        "title": title,
+        "affected_url": affected_url,
+        "evidence": evidence,
+        "impact": impact,
+        "recommendation": recommendation,
+        "status": status,
+    }
+
+
+def _normal_url(target):
+    target = str(target or "").strip()
+    if not target:
+        raise ValueError("Target is required.")
+    if not re.match(r"^https?://", target, re.I):
+        target = f"https://{target}"
+    parsed = urlparse(target)
+    if not parsed.netloc:
+        raise ValueError("Enter a valid target URL.")
+    return target.rstrip("/")
+
+
+def _safe_get(url, timeout=8):
+    started = time.time()
+    response = requests.get(url, timeout=timeout, allow_redirects=True, headers={"User-Agent": "CyberScan-SafePrototype/1.0"})
+    response.elapsed_seconds = round(time.time() - started, 3)
+    return response
+
+
+def security_header_check(target):
+    url = _normal_url(target)
+    response = _safe_get(url)
+    required = {
+        "Content-Security-Policy": ("Medium", "Missing Content Security Policy", "Add a proper Content-Security-Policy header."),
+        "Strict-Transport-Security": ("Medium", "Missing Strict-Transport-Security", "Add HSTS for HTTPS sites."),
+        "X-Frame-Options": ("Low", "Missing X-Frame-Options", "Add X-Frame-Options or frame-ancestors in CSP."),
+        "X-Content-Type-Options": ("Low", "Missing X-Content-Type-Options", "Add X-Content-Type-Options: nosniff."),
+        "Referrer-Policy": ("Low", "Missing Referrer-Policy", "Add a privacy-conscious Referrer-Policy header."),
+        "Permissions-Policy": ("Info", "Missing Permissions-Policy", "Add Permissions-Policy to limit browser features."),
+    }
+    findings = []
+    for header, (severity, title, recommendation) in required.items():
+        if header not in response.headers:
+            findings.append(_finding(
+                severity,
+                title,
+                url,
+                f"{header} header was not found.",
+                "The website may have weaker browser-side protection against common web risks.",
+                recommendation,
+            ))
+    return {"findings": findings, "requests": [request_logger(url)]}
+
+
+def ssl_tls_check(target):
+    url = _normal_url(target)
+    parsed = urlparse(url)
+    findings = []
+    if parsed.scheme != "https":
+        findings.append(_finding("Medium", "HTTPS Not Used", url, "Target URL does not use HTTPS.", "Traffic may be exposed or modified in transit.", "Use HTTPS with a valid TLS certificate."))
+        return {"findings": findings, "requests": []}
+    try:
+        context = ssl.create_default_context()
+        with socket.create_connection((parsed.hostname, parsed.port or 443), timeout=5) as sock:
+            with context.wrap_socket(sock, server_hostname=parsed.hostname) as secure_sock:
+                cert = secure_sock.getpeercert()
+        not_after = cert.get("notAfter")
+        if not_after:
+            expires = datetime.datetime.strptime(not_after, "%b %d %H:%M:%S %Y %Z")
+            days_left = (expires - datetime.datetime.utcnow()).days
+            if days_left < 30:
+                findings.append(_finding("Medium", "TLS Certificate Expiring Soon", url, f"Certificate expires in {days_left} day(s).", "An expired certificate can break secure access.", "Renew the TLS certificate before expiration."))
+    except Exception as exc:
+        findings.append(_finding("Medium", "TLS Certificate Check Failed", url, str(exc), "CyberScan could not verify the certificate.", "Confirm the site has a valid TLS certificate."))
+    return {"findings": findings, "requests": []}
+
+
+def cookie_security_check(target):
+    url = _normal_url(target)
+    response = _safe_get(url)
+    findings = []
+    for cookie in response.cookies:
+        raw = response.headers.get("Set-Cookie", "")
+        lower_raw = raw.lower()
+        if not cookie.secure:
+            findings.append(_finding("Medium", f"Cookie Missing Secure Flag: {cookie.name}", url, f"Set-Cookie observed for {cookie.name}.", "Cookie may be sent over non-HTTPS connections.", "Set the Secure flag."))
+        if "httponly" not in lower_raw:
+            findings.append(_finding("Medium", f"Cookie Missing HttpOnly Flag: {cookie.name}", url, f"Set-Cookie observed for {cookie.name}.", "Cookie may be accessible to client-side scripts.", "Set the HttpOnly flag."))
+        if "samesite" not in lower_raw:
+            findings.append(_finding("Low", f"Cookie Missing SameSite Attribute: {cookie.name}", url, f"Set-Cookie observed for {cookie.name}.", "Cookie may have weaker cross-site request protection.", "Set SameSite=Lax or Strict where appropriate."))
+    return {"findings": findings, "requests": [request_logger(url)]}
+
+
+def form_inspector(target):
+    url = _normal_url(target)
+    response = _safe_get(url)
+    soup = BeautifulSoup(response.text, "html.parser")
+    findings = []
+    for index, form in enumerate(soup.find_all("form"), start=1):
+        method = (form.get("method") or "get").lower()
+        action = urljoin(url, form.get("action") or url)
+        text = form.get_text(" ").lower()
+        has_password = bool(form.find("input", {"type": "password"}))
+        has_csrf = bool(form.find("input", attrs={"name": re.compile(r"csrf|token|nonce", re.I)}))
+        if method == "get" and (has_password or any(word in text for word in ("password", "login", "email"))):
+            findings.append(_finding("Medium", "Sensitive Form Uses GET", action, f"Form #{index} uses GET.", "Sensitive values may appear in URLs or logs.", "Use POST for sensitive forms."))
+        if has_password and urlparse(url).scheme != "https":
+            findings.append(_finding("High", "Password Form On Non-HTTPS Page", action, f"Password input found on {url}.", "Credentials may be exposed in transit.", "Serve login pages over HTTPS."))
+        password_input = form.find("input", {"type": "password"})
+        if password_input and str(password_input.get("autocomplete", "")).lower() != "off":
+            findings.append(_finding("Low", "Password Field Allows Autocomplete", action, f"Form #{index} password field autocomplete is not off.", "Shared browsers may retain credentials unexpectedly.", "Set autocomplete according to your authentication policy."))
+        if not has_csrf and method == "post":
+            findings.append(_finding("Medium", "Missing CSRF Token Indicator", action, f"Form #{index} has no CSRF-looking token field.", "State-changing forms may lack CSRF protection.", "Add server-side CSRF protection."))
+        if urlparse(action).netloc and urlparse(action).netloc != urlparse(url).netloc:
+            findings.append(_finding("Medium", "External Form Action", action, f"Form #{index} posts to {action}.", "Form data may leave the expected domain.", "Verify external form destinations are trusted."))
+    return {"findings": findings, "requests": [request_logger(url)]}
+
+
+def exposed_path_check(target, paths=None, delay=0.2):
+    base = _normal_url(target)
+    paths = paths or ["/admin", "/login", "/backup", "/config", "/.env", "/robots.txt", "/sitemap.xml", "/debug", "/test"]
+    findings, logs = [], []
+    for path in paths[:20]:
+        time.sleep(max(0, min(float(delay or 0), 2)))
+        url = urljoin(base + "/", str(path).lstrip("/"))
+        try:
+            response = _safe_get(url, timeout=6)
+            logs.append(request_logger(url))
+            if response.status_code in {200, 401, 403}:
+                severity = "High" if path in {"/.env", "/config", "/backup"} and response.status_code == 200 else "Low"
+                findings.append(_finding(severity, f"Exposed Path Indicator: {path}", url, f"HTTP {response.status_code} returned for {path}.", "A sensitive or administrative path may be discoverable.", "Restrict sensitive paths and remove exposed configuration files."))
+        except Exception:
+            continue
+    return {"findings": findings, "requests": logs}
+
+
+def url_fuzzer(target, wordlist=None, max_requests=10, delay=0.5):
+    words = wordlist or ["admin", "login", "backup", "config", "debug", "test", "api", "docs"]
+    paths = [f"/{str(word).strip().lstrip('/')}" for word in words if str(word).strip()]
+    return exposed_path_check(target, paths=paths[:max(1, min(int(max_requests or 10), 25))], delay=delay)
+
+
+def port_scanner(host, ports=None, timeout=1.0):
+    parsed = urlparse(str(host) if re.match(r"^[a-z]+://", str(host), re.I) else f"//{host}")
+    hostname = parsed.hostname or str(host).strip()
+    if not hostname:
+        raise ValueError("Target host is required.")
+    allowed = [21, 22, 25, 53, 80, 110, 143, 443, 465, 587, 993, 995, 3306, 5432, 8000, 8080, 8443]
+    selected = [int(p) for p in (ports or allowed) if int(p) in allowed][:25]
+    findings = []
+    for port in selected:
+        with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as sock:
+            sock.settimeout(max(0.2, min(float(timeout or 1), 3)))
+            if sock.connect_ex((hostname, port)) == 0:
+                findings.append(_finding("Info", f"Open TCP Port: {port}", hostname, f"TCP connection succeeded to {hostname}:{port}.", "An exposed service may increase attack surface.", "Confirm this service is expected and access-controlled."))
+    return {"findings": findings, "requests": []}
+
+
+def network_scanner(host):
+    return port_scanner(host)
+
+
+def website_recon(target):
+    url = _normal_url(target)
+    response = _safe_get(url)
+    soup = BeautifulSoup(response.text, "html.parser")
+    title = soup.title.string.strip() if soup.title and soup.title.string else "No title"
+    findings = [_finding("Info", "Website Recon Summary", url, f"Status {response.status_code}; title '{title}'; content-type {response.headers.get('Content-Type', 'unknown')}; links {len(soup.find_all('a'))}; forms {len(soup.find_all('form'))}; scripts {len(soup.find_all('script'))}.", "Recon data supports manual review.", "Review exposed metadata and confirm headers are intentional.")]
+    server = response.headers.get("Server")
+    if server:
+        findings.append(_finding("Info", "Server Header Visible", url, f"Server: {server}", "Server metadata may reveal platform details.", "Consider minimizing version details in headers."))
+    return {"findings": findings, "requests": [request_logger(url)]}
+
+
+def mixed_content_check(target):
+    url = _normal_url(target)
+    response = _safe_get(url)
+    findings = []
+    if urlparse(url).scheme != "https":
+        return {"findings": findings, "requests": [request_logger(url)]}
+    soup = BeautifulSoup(response.text, "html.parser")
+    insecure = []
+    for tag, attr in (("script", "src"), ("img", "src"), ("link", "href"), ("iframe", "src")):
+        for node in soup.find_all(tag):
+            value = str(node.get(attr) or "")
+            if value.startswith("http://"):
+                insecure.append(value)
+    if insecure:
+        findings.append(_finding(
+            "Medium",
+            "Mixed Content Resource Detected",
+            url,
+            f"HTTP resources loaded on HTTPS page: {', '.join(insecure[:5])}",
+            "Mixed content can weaken transport security and browser protections.",
+            "Load page resources over HTTPS or remove insecure dependencies.",
+        ))
+    return {"findings": findings, "requests": [request_logger(url)]}
+
+
+def waf_detector(target):
+    url = _normal_url(target)
+    response = _safe_get(url)
+    haystack = " ".join([str(response.headers), response.text[:2000]]).lower()
+    indicators = [name for name in ("cloudflare", "akamai", "sucuri", "imperva", "aws", "fastly", "waf") if name in haystack]
+    if indicators:
+        findings = [_finding("Info", "Possible WAF Detected", url, f"Indicators observed: {', '.join(sorted(set(indicators)))}.", "A WAF or CDN may be filtering traffic.", "Confirm WAF/CDN configuration and logging.")]
+    else:
+        findings = [_finding("Info", "No WAF Indicator Found", url, "No common WAF indicators were observed in headers or initial response.", "This does not prove a WAF is absent.", "Review perimeter protection manually.")]
+    return {"findings": findings, "requests": [request_logger(url)]}
+
+
+def subdomain_finder(domain, subdomains=None, delay=0.2):
+    domain = str(domain or "").strip().replace("https://", "").replace("http://", "").split("/")[0]
+    if not domain:
+        raise ValueError("Domain is required.")
+    names = subdomains or ["www", "mail", "app", "dev", "test", "admin", "api", "portal"]
+    findings = []
+    for name in names[:15]:
+        time.sleep(max(0, min(float(delay or 0), 2)))
+        fqdn = f"{str(name).strip()}.{domain}"
+        try:
+            ip = socket.gethostbyname(fqdn)
+            findings.append(_finding("Info", "Resolved Subdomain", fqdn, f"{fqdn} resolved to {ip}.", "Subdomain inventory supports asset review.", "Confirm the subdomain is expected and monitored."))
+        except OSError:
+            continue
+    return {"findings": findings, "requests": []}
+
+
+def api_scanner(base_url):
+    result = exposed_path_check(base_url, paths=["/api", "/api/v1", "/api/docs", "/swagger", "/swagger.json", "/openapi.json"], delay=0.2)
+    try:
+        response = _safe_get(_normal_url(base_url))
+        cors = response.headers.get("Access-Control-Allow-Origin", "")
+        if cors == "*":
+            result["findings"].append(_finding(
+                "Medium",
+                "Overly Permissive CORS Header",
+                _normal_url(base_url),
+                "Access-Control-Allow-Origin is set to *.",
+                "Overly broad CORS may expose API responses to untrusted origins.",
+                "Restrict CORS origins to trusted applications.",
+            ))
+    except Exception:
+        pass
+    return result
+
+
+def domain_finder(domain):
+    domain = str(domain or "").strip().replace("https://", "").replace("http://", "").split("/")[0]
+    if not domain:
+        raise ValueError("Domain is required.")
+    findings, logs = [], []
+    try:
+        ip = socket.gethostbyname(domain)
+        findings.append(_finding("Info", "Domain Resolved", domain, f"{domain} resolved to {ip}.", "DNS resolution confirms the domain is reachable.", "Review DNS records and ownership manually."))
+    except OSError as exc:
+        findings.append(_finding("Low", "Domain Did Not Resolve", domain, str(exc), "The domain may be unavailable or incorrectly configured.", "Confirm DNS configuration."))
+    for scheme in ("https", "http"):
+        url = f"{scheme}://{domain}"
+        try:
+            response = _safe_get(url, timeout=5)
+            logs.append(request_logger(url))
+            findings.append(_finding("Info", f"{scheme.upper()} Response Observed", url, f"HTTP {response.status_code} returned.", "Basic service availability was observed.", "Confirm exposed web services are intended."))
+        except Exception:
+            continue
+    return {"findings": findings, "requests": logs}
+
+
+def virtual_host_finder(domain, host_list=None, delay=0.3):
+    base = _normal_url(domain)
+    parsed = urlparse(base)
+    hosts = host_list or ["www", "app", "dev", "test", "admin", "api"]
+    findings, logs = [], []
+    for host in hosts[:12]:
+        time.sleep(max(0, min(float(delay or 0), 2)))
+        candidate = f"{str(host).strip()}.{parsed.hostname}"
+        try:
+            started = time.time()
+            response = requests.get(base, headers={"Host": candidate, "User-Agent": "CyberScan-SafePrototype/1.0"}, timeout=5, allow_redirects=False)
+            elapsed = round((time.time() - started) * 1000)
+            logs.append({"method": "GET", "url": base, "status_code": response.status_code, "content_type": response.headers.get("Content-Type", ""), "response_time_ms": elapsed, "created_at": datetime.datetime.utcnow().isoformat(timespec="seconds")})
+            if response.status_code in {200, 301, 302, 401, 403}:
+                findings.append(_finding("Info", "Possible Virtual Host Indicator", candidate, f"Host header {candidate} returned HTTP {response.status_code}.", "A virtual host may exist and should be inventoried.", "Confirm this hostname is authorized and expected."))
+        except Exception:
+            continue
+    return {"findings": findings, "requests": logs}
+
+
+def wordpress_scanner(target):
+    result = exposed_path_check(target, paths=["/wp-login.php", "/wp-json/", "/readme.html"], delay=0.2)
+    try:
+        url = _normal_url(target)
+        response = _safe_get(url)
+        if "wp-content" in response.text.lower() or "wordpress" in response.text.lower():
+            result["findings"].append(_finding("Info", "WordPress Indicator Found", url, "WordPress markers were observed in the page source.", "WordPress sites require regular plugin/theme/core maintenance.", "Keep WordPress core, themes, and plugins updated."))
+    except Exception:
+        pass
+    return result
+
+
+def drupal_scanner(target):
+    result = exposed_path_check(target, paths=["/core/CHANGELOG.txt", "/user/login"], delay=0.2)
+    try:
+        url = _normal_url(target)
+        response = _safe_get(url)
+        if "drupal" in " ".join([str(response.headers), response.text[:3000]]).lower():
+            result["findings"].append(_finding("Info", "Drupal Indicator Found", url, "Drupal markers were observed in headers or page source.", "Drupal sites require regular core/module maintenance.", "Keep Drupal core and modules updated."))
+    except Exception:
+        pass
+    return result
+
+
+def joomla_scanner(target):
+    result = exposed_path_check(target, paths=["/administrator/", "/language/en-GB/en-GB.xml"], delay=0.2)
+    try:
+        url = _normal_url(target)
+        response = _safe_get(url)
+        if "joomla" in " ".join([str(response.headers), response.text[:3000]]).lower():
+            result["findings"].append(_finding("Info", "Joomla Indicator Found", url, "Joomla markers were observed in headers or page source.", "Joomla sites require regular component and core maintenance.", "Keep Joomla core, templates, and extensions updated."))
+    except Exception:
+        pass
+    return result
+
+
+def cloud_configuration_check(target):
+    url = _normal_url(target)
+    findings = [_finding(
+        "Info",
+        "Cloud Configuration Checklist",
+        url,
+        "Safe prototype completed. No private cloud APIs or credentials were used.",
+        "Cloud exposure requires manual review of storage, IAM, logging, and public endpoints.",
+        "Review public buckets, least-privilege IAM, exposed keys, logging, and network rules.",
+    )]
+    if any(token in url.lower() for token in ("s3", "blob.core.windows.net", "storage.googleapis.com")):
+        findings.append(_finding("Low", "Public Cloud Storage Style URL", url, "Target looks like a public cloud storage URL.", "Public storage can accidentally expose sensitive files.", "Confirm bucket/container access policy is intentional."))
+    return {"findings": findings, "requests": [request_logger(url)]}
+
+
+def kubernetes_configuration_check(target):
+    return exposed_path_check(target, paths=["/version", "/api", "/healthz"], delay=0.2)
+
+
+def sql_error_pattern_checker(target, authorization_confirmed=False):
+    url = _normal_url(target)
+    check_url = url
+    if authorization_confirmed:
+        separator = "&" if "?" in url else "?"
+        check_url = f"{url}{separator}cyberscan_quote=%27"
+    response = _safe_get(check_url)
+    patterns = ["sql syntax", "mysql_fetch", "postgresql", "sqlite error", "odbc", "ora-"]
+    matched = next((p for p in patterns if p in response.text.lower()), None)
+    findings = []
+    if matched:
+        findings.append(_finding("High", "SQL Error Pattern Detected", check_url, f"Visible database error pattern observed: {matched}.", "Verbose database errors can reveal implementation details and may indicate unsafe query handling.", "Hide database errors and use parameterized queries."))
+    return {"findings": findings, "requests": [request_logger(check_url)]}
+
+
+def reflected_xss_safe_marker_checker(target, authorization_confirmed=False):
+    url = _normal_url(target)
+    marker = "cyberscan_marker_123"
+    check_url = url
+    if authorization_confirmed:
+        separator = "&" if "?" in url else "?"
+        check_url = f"{url}{separator}cyberscan_marker={marker}"
+    response = _safe_get(check_url)
+    findings = []
+    if marker in response.text:
+        findings.append(_finding("Medium", "Reflected Input Marker Detected", check_url, f"Harmless marker '{marker}' was reflected in the response.", "Reflected input should be manually validated for output encoding.", "Encode reflected input by context and validate server-side."))
+    return {"findings": findings, "requests": [request_logger(check_url)]}
+
+
+def request_logger(target):
+    url = _normal_url(target)
+    try:
+        response = _safe_get(url)
+        return {
+            "method": "GET",
+            "url": url,
+            "status_code": response.status_code,
+            "content_type": response.headers.get("Content-Type", ""),
+            "response_time": getattr(response, "elapsed_seconds", None),
+            "response_time_ms": int((getattr(response, "elapsed_seconds", 0) or 0) * 1000),
+            "created_at": datetime.datetime.utcnow().isoformat(timespec="seconds"),
+        }
+    except Exception as exc:
+        return {"method": "GET", "url": url, "status_code": 0, "content_type": "", "error": str(exc), "created_at": datetime.datetime.utcnow().isoformat(timespec="seconds")}
+
+
+def website_scanner(target, options=None):
+    options = options or {}
+    combined = {"findings": [], "requests": []}
+    for fn in (website_recon, security_header_check, ssl_tls_check, cookie_security_check, form_inspector, exposed_path_check, mixed_content_check):
+        result = fn(target)
+        combined["findings"].extend(result.get("findings", []))
+        combined["requests"].extend(result.get("requests", []))
+    return combined
+
+
+def authorized_password_security_audit(login_url, username, password_list, max_attempts=5, delay=1, authorization_confirmed=False, stop_on_success=True):
+    passwords = password_list.splitlines() if isinstance(password_list, str) else (password_list or [])
+    result = password_audit_check(username, passwords, authorization_confirmed, max_attempts, delay, stop_on_success)
+    title = "Weak/default credential detected in authorized audit" if result["success"] else "No weak/default credential detected in limited audit"
+    return {"findings": [_finding("High" if result["success"] else "Info", title, login_url, f"{result['attempts_made']} masked attempt(s) completed within a limit of {result['attempt_limit']}.", "Weak credentials can allow unauthorized account access." if result["success"] else "No weak credential was detected within the limited authorized list.", "Use strong unique passwords, MFA, rate limits, and monitoring.")], "requests": []}
+
+
+def report_generator(scan_id):
+    return {"findings": [_finding("Info", "Report Generation Requested", str(scan_id), "Report generation was requested for this scan.", "Reports support remediation review.", "Download HTML, JSON, or CSV from the Reports page.")], "requests": []}
+
+
 class CyberScan:
     SCANNER_NAME = "CyberScan"
     SCANNER_VERSION = "1.2.0"
@@ -564,6 +1045,76 @@ class CyberScan:
             "notes": coverage_notes,
         }
 
+    def build_analysis_profile(self, severity_summary=None, confidence_summary=None, category_summary=None):
+        severity_summary = severity_summary or self.calculate_summary()
+        confidence_summary = confidence_summary or Counter(result.get("confidence", "Medium") for result in self.results)
+        category_summary = category_summary or Counter(result["owasp_category"] for result in self.results)
+
+        weights = {
+            "Critical": 28,
+            "High": 18,
+            "Medium": 9,
+            "Low": 4,
+            "Info": 1,
+        }
+        risk_score = min(
+            100,
+            sum(severity_summary.get(severity, 0) * weight for severity, weight in weights.items()),
+        )
+        total_findings = sum(severity_summary.values())
+        detection_count = (
+            severity_summary.get("Critical", 0)
+            + severity_summary.get("High", 0)
+            + severity_summary.get("Medium", 0)
+        )
+        check_count = max(total_findings + len(self.SCAN_PROFILES.get(self.scan_type, self.SCAN_PROFILES["Quick"])["modules"]), 1)
+
+        if risk_score >= 80 or severity_summary.get("Critical", 0):
+            verdict = "Critical"
+            verdict_label = "Immediate Review"
+        elif risk_score >= 50 or severity_summary.get("High", 0):
+            verdict = "High"
+            verdict_label = "High Risk"
+        elif risk_score >= 25 or severity_summary.get("Medium", 0):
+            verdict = "Medium"
+            verdict_label = "Needs Review"
+        elif risk_score > 0:
+            verdict = "Low"
+            verdict_label = "Low Risk"
+        else:
+            verdict = "Clean"
+            verdict_label = "No Findings"
+
+        detected_categories = sorted(category for category, count in category_summary.items() if count)
+        reputation_signals = []
+        if severity_summary.get("Critical", 0) or severity_summary.get("High", 0):
+            reputation_signals.append("High-impact web security findings were detected.")
+        if confidence_summary.get("High", 0):
+            reputation_signals.append("At least one finding has high-confidence evidence.")
+        if self.open_ports:
+            reputation_signals.append("Network exposure was observed through safe TCP connection checks.")
+        if not reputation_signals:
+            reputation_signals.append("No high-impact automated indicators were observed in this scan.")
+
+        return {
+            "platform_positioning": "VirusTotal-inspired authorized web security analysis",
+            "risk_score": risk_score,
+            "risk_grade": verdict,
+            "verdict": verdict_label,
+            "detection_ratio": {
+                "flagged": detection_count,
+                "total": check_count,
+                "label": f"{detection_count}/{check_count}",
+            },
+            "total_findings": total_findings,
+            "detected_categories": detected_categories,
+            "reputation_signals": reputation_signals,
+            "safe_scope": [
+                "Authorized website and web-service checks only.",
+                "No brute force, malware execution, credential attacks, data theft, or exploit chaining.",
+            ],
+        }
+
     def add_result(
         self,
         title,
@@ -687,6 +1238,7 @@ class CyberScan:
         category_summary = Counter(result["owasp_category"] for result in self.results)
         cwe_summary = Counter(result.get("cwe", "CWE-N/A") for result in self.results)
         confidence_summary = Counter(result.get("confidence", "Medium") for result in self.results)
+        analysis_profile = self.build_analysis_profile(severity_summary, confidence_summary, category_summary)
         profile = self.SCAN_PROFILES.get(self.scan_type, self.SCAN_PROFILES["Quick"])
 
         return {
@@ -720,11 +1272,13 @@ class CyberScan:
             "scan_date": self.completed_at.isoformat() if self.completed_at else datetime.datetime.now().isoformat(),
             "duration_seconds": round(self.duration_seconds, 2),
             "summary": severity_summary,
+            "analysis": analysis_profile,
             "affected_hosts": self._infer_affected_hosts(),
             "category_summary": dict(category_summary),
             "cwe_summary": dict(cwe_summary),
             "confidence_summary": dict(confidence_summary),
             "coverage": self.build_coverage_summary(),
+            "password_audit": getattr(self, "password_audit_result", None),
             "open_ports": self.open_ports,
             "discovery_sources": self.discovery_sources,
             "robots_policies": self.robots_policies,
@@ -1679,6 +2233,7 @@ class CyberScan:
     def print_report(self):
         report_data = self.build_report_data()
         summary = report_data["summary"]
+        analysis = report_data["analysis"]
         elapsed = report_data["duration_seconds"]
 
         print("=" * 80)
@@ -1690,6 +2245,8 @@ class CyberScan:
         print(f"Final URL: {report_data['final_url']}")
         print(f"Date: {report_data['scan_date']}")
         print(f"Duration: {elapsed:.1f}s")
+        print(f"Risk Score: {analysis['risk_score']}/100 ({analysis['verdict']})")
+        print(f"Detection Ratio: {analysis['detection_ratio']['label']} flagged checks")
         print("-" * 80)
         print("Summary")
         for severity in ("Critical", "High", "Medium", "Low", "Info"):
@@ -1771,6 +2328,7 @@ class CyberScan:
     def save_html_report(self, filename="cyberscan_report.html"):
         report_data = self.build_report_data()
         summary = report_data["summary"]
+        analysis = report_data.get("analysis", {})
         findings = report_data["findings"]
         category_summary = report_data["category_summary"]
         cwe_summary = report_data.get("cwe_summary", {})
@@ -1844,6 +2402,16 @@ class CyberScan:
             f"<li>{html_escape(str(note))}</li>"
             for note in coverage.get("notes", [])
         ) or "<li>No coverage limitations were recorded for this scan.</li>"
+
+        signal_rows = "".join(
+            f"<li>{html_escape(str(signal))}</li>"
+            for signal in analysis.get("reputation_signals", [])
+        ) or "<li>No reputation signals were generated.</li>"
+
+        safe_scope_rows = "".join(
+            f"<li>{html_escape(str(scope))}</li>"
+            for scope in analysis.get("safe_scope", [])
+        ) or "<li>Safe authorized scanning scope was not recorded.</li>"
 
         prevention_rows = "".join(
             "<article class='prevention-card'>"
@@ -1928,6 +2496,24 @@ class CyberScan:
     .card strong {{
       font-size: 28px;
       display: block;
+    }}
+    .score-card {{
+      border-color: rgba(40,177,255,.45);
+      background: linear-gradient(180deg, rgba(40,177,255,.14), rgba(20,31,47,.95));
+    }}
+    .score-card strong {{
+      font-size: 38px;
+    }}
+    .verdict {{
+      display: inline-flex;
+      margin-top: 10px;
+      padding: 5px 10px;
+      border-radius: 999px;
+      background: rgba(40,177,255,.14);
+      color: #bce8ff;
+      font-size: 12px;
+      font-weight: 700;
+      font-style: normal;
     }}
     .grid {{
       display: grid;
@@ -2038,6 +2624,9 @@ class CyberScan:
         <div class="card"><span>Scan Name</span><strong>{html_escape(report_data['scan']['name'])}</strong></div>
         <div class="card"><span>Scan Type</span><strong>{html_escape(report_data['scan']['type'])}</strong></div>
         <div class="card"><span>Target</span><strong>{html_escape(report_data['target'])}</strong></div>
+        <div class="card score-card"><span>Risk Score</span><strong>{html_escape(str(analysis.get('risk_score', 0)))}/100</strong><em class="verdict">{html_escape(str(analysis.get('verdict', 'No Findings')))}</em></div>
+        <div class="card"><span>Detection Ratio</span><strong>{html_escape(str(analysis.get('detection_ratio', {}).get('label', '0/0')))}</strong></div>
+        <div class="card"><span>Risk Grade</span><strong>{html_escape(str(analysis.get('risk_grade', 'Clean')))}</strong></div>
         <div class="card"><span>Final URL</span><strong>{html_escape(report_data['final_url'])}</strong></div>
         <div class="card"><span>Findings</span><strong>{len(findings)}</strong></div>
         <div class="card"><span>Duration</span><strong>{report_data['duration_seconds']:.1f}s</strong></div>
@@ -2083,6 +2672,11 @@ class CyberScan:
           {host_rows}
         </ul>
 
+        <h2 style="margin-top:18px;">Reputation Signals</h2>
+        <ul class="list">
+          {signal_rows}
+        </ul>
+
         <h2 style="margin-top:18px;">OWASP Coverage</h2>
         <ul class="list">
           {category_rows}
@@ -2116,6 +2710,10 @@ class CyberScan:
         <h2>Coverage Notes</h2>
         <ul>
           {coverage_notes}
+        </ul>
+        <h2 style="margin-top:18px;">Safe Scope</h2>
+        <ul>
+          {safe_scope_rows}
         </ul>
       </div>
     </section>

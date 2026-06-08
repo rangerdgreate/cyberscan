@@ -1,7 +1,9 @@
-# CyberScan: An Automated Web Vulnerability Scanner Built with Python
+# CyberScan: A VirusTotal-Inspired Web Security Analysis Platform
 
-CyberScan is a local web vulnerability scanner for authorized testing environments. It includes a Python scan engine, a desktop-style web UI, and JSON, CSV, and HTML report exports.
+CyberScan is a local, VirusTotal-inspired web security analysis platform for authorized testing environments. It includes a Python scan engine, a desktop-style web UI, risk scoring, detection-ratio summaries, reputation-style target signals, and JSON, CSV, and HTML report exports.
 It also compares each new scan with the previous saved scan so teams can see new, existing, and fixed findings over time.
+
+Unlike VirusTotal, which focuses on malware and public reputation aggregation, CyberScan focuses on authorized website and web-service assessment. It is designed for local capstone demonstrations, security triage, and OWASP-aligned reporting without brute force or destructive testing.
 
 ## Install requirements
 
@@ -10,6 +12,38 @@ pip install -r requirements.txt
 ```
 
 ## How to run
+
+Install dependencies:
+
+```powershell
+pip install -r requirements.txt
+```
+
+Launch the Flask web platform:
+
+```powershell
+python app.py
+```
+
+Then open:
+
+```text
+http://127.0.0.1:8006
+```
+
+The Flask UI uses `templates/` and `static/` pages for login, dashboard, new scan, scan progress, results, finding details, reports, settings, and help.
+
+Optional MongoDB storage can be enabled with environment variables:
+
+```powershell
+$env:CYBERSCAN_MONGO_URI = "mongodb://localhost:27017"
+$env:CYBERSCAN_MONGO_DB = "cyberscan"
+python app.py
+```
+
+If MongoDB is not configured or unavailable, CyberScan automatically uses local file storage.
+
+To run the scanner directly from the command line:
 
 ```powershell
 python cyberscan.py https://example.com --confirm-authorized
@@ -33,13 +67,15 @@ Scan profiles provide safe defaults:
 - `Full`: balanced crawling, form review, safe SQL/XSS indicators, sensitive path checks, and report comparison.
 - `Authenticated`: session-aware scanning using authorized headers or cookies, broader page limits, and access-control indicators.
 
-To launch the local web app:
+Each completed scan produces a VirusTotal-style analysis profile:
 
-```powershell
-python app.py
-```
+- Risk score from `0` to `100`
+- Verdict such as `No Findings`, `Low Risk`, `Needs Review`, `High Risk`, or `Immediate Review`
+- Detection ratio showing how many security checks were flagged
+- Reputation signals based on high-impact findings, confidence, and safe network exposure checks
+- Safe-scope notes that document excluded behavior such as brute force, malware execution, credential attacks, and exploit chaining
 
-The web app serves the prototype UI and saves generated reports in the `reports` folder. Before a web scan starts, the UI requires confirmation that the user owns the target or has explicit permission to scan it.
+The web app serves the Flask platform UI and saves generated reports in the `reports` folder. Before a web scan starts, the UI requires confirmation that the user owns the target or has explicit permission to scan it.
 Report template generation and weekly report schedules are automated by the local web app while `app.py` is running. Use the Reports page to generate a template immediately or enable a weekly schedule; schedule state is saved in `reports/automation.json`.
 Scan comparison state is saved with each history entry in `reports/history.json` and exported in JSON, CSV, and HTML reports.
 
@@ -104,6 +140,7 @@ ruff check .
 
 Every finding now includes:
 
+- VirusTotal-style risk score, verdict, detection ratio, and reputation signals at the report level
 - Severity
 - OWASP category
 - CWE mapping when applicable

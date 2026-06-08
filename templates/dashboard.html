@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="split">
+  <article class="card hero-panel">
+    <span class="eyebrow">Welcome to CyberScan</span>
+    <h2>Start with a website URL that you own or have permission to test.</h2>
+    <p>CyberScan guides you from scan setup, to easy-to-read findings, to reports you can submit to a teacher, client, or project adviser.</p>
+    <div class="actions">
+      <a class="btn primary" href="{{ url_for('new_scan') }}">Start New Scan</a>
+      <a class="btn" href="{{ url_for('new_scan') }}">Quick Scan</a>
+    </div>
+  </article>
+  <article class="card dashboard-card image-card">
+    <img src="{{ url_for('static', filename='images/dashboard-preview.svg') }}" alt="CyberScan dashboard preview">
+  </article>
+</div>
+
+<div class="cards six">
+  <article class="card stat"><span>Total Scans</span><strong data-total-scans>0</strong><small>Saved scan history</small></article>
+  <article class="card stat"><span>Critical Findings</span><strong data-critical-count>0</strong><small>Fix immediately</small></article>
+  <article class="card stat"><span>High Risk Findings</span><strong data-high-count>0</strong><small>Needs urgent attention</small></article>
+  <article class="card stat"><span>Medium Risk Findings</span><strong data-medium-count>0</strong><small>Should be fixed soon</small></article>
+  <article class="card stat"><span>Low Risk Findings</span><strong data-low-count>0</strong><small>Minor improvement</small></article>
+  <article class="card stat"><span>Last Scan Status</span><strong data-last-status>Ready</strong><small data-last-target>No scan loaded</small></article>
+</div>
+
+<div class="split">
+  <article class="card dashboard-card">
+    <div class="section-head"><h2>Risk Overview</h2><span class="badge info">Live</span></div>
+    <div class="risk-grid">
+      <div><span>Critical</span><strong data-risk-critical>0</strong><small>Fix immediately</small></div>
+      <div><span>High</span><strong data-risk-high>0</strong><small>Important security issue</small></div>
+      <div><span>Medium</span><strong data-risk-medium>0</strong><small>Should be fixed soon</small></div>
+      <div><span>Low</span><strong data-risk-low>0</strong><small>Minor improvement</small></div>
+      <div><span>Info</span><strong data-risk-info>0</strong><small>For awareness only</small></div>
+    </div>
+  </article>
+  <article class="card dashboard-card">
+    <h2>Quick Start Scan</h2>
+    <p class="muted">Use the recommended settings for a fast beginner-friendly check of headers, cookies, SSL/TLS, and common paths.</p>
+    <div class="actions"><a class="btn primary" href="{{ url_for('new_scan') }}">Start Scan</a><a class="btn" href="{{ url_for('reports') }}">Generate Report</a></div>
+    <p class="warning-note">Only scan websites you own or have written permission to test.</p>
+  </article>
+</div>
+
+<div class="split">
+  <article class="card">
+    <div class="section-head"><h2>Recent Scans</h2><a class="link" href="{{ url_for('results') }}">View results</a></div>
+    <p class="empty-state" data-recent-empty>No scans yet. Start your first authorized scan.</p>
+    <div class="table-wrap"><table><thead><tr><th>Scan</th><th>Target</th><th>Type</th><th>Date</th><th>Findings</th></tr></thead><tbody data-recent-scans></tbody></table></div>
+  </article>
+  <article class="card">
+    <h2>Current Risk Rating</h2>
+    <div class="score"><strong data-risk-score>0/100</strong><span data-risk-verdict>No Findings</span></div>
+    <div class="progress"><i data-risk-bar></i></div>
+    <p class="muted">Risk score is calculated from the latest saved scan report.</p>
+  </article>
+</div>
+{% endblock %}

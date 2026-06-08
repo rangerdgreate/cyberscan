@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% block content %}
+<article class="card">
+  <div class="section-head"><h2 data-detail-title>Finding Details</h2><span class="badge info" data-detail-severity>Info</span></div>
+  <p class="muted">Use the status field to track whether the issue has already been fixed.</p>
+  <div class="detail-grid">
+    <section><span class="label">Summary</span><p data-detail-description>Select a finding from the Results page.</p></section>
+    <section><span class="label">What CyberScan Found</span><p data-detail-found>-</p></section>
+    <section><span class="label">Why This Matters</span><p data-detail-impact>-</p></section>
+    <section><span class="label">Evidence</span><p data-detail-evidence>-</p></section>
+    <section><span class="label">Recommended Fix</span><p data-detail-recommendation>-</p></section>
+    <section><span class="label">Affected URL</span><p data-detail-url>-</p></section>
+    <label>Status<select data-detail-status><option>Open</option><option>Fixed</option><option>Accepted Risk</option></select></label>
+  </div>
+  <div class="actions"><a class="btn" href="{{ url_for('results') }}">Back to Results</a><a class="btn primary" href="{{ url_for('reports') }}">Generate Report</a></div>
+</article>
+{% endblock %}

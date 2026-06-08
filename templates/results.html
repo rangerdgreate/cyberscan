@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+{% block content %}
+<article class="card" data-results-page data-scan-id="{{ scan_id }}">
+  <div class="section-head">
+    <div>
+      <h2>Vulnerability Findings</h2>
+      <p class="muted" data-results-summary>CyberScan findings will appear here after a completed scan.</p>
+    </div>
+    <div class="actions">
+      <a class="btn" href="{{ url_for('new_scan') }}">Try Another Scan</a>
+      <a class="btn primary" href="{{ url_for('reports') }}">Generate Report</a>
+    </div>
+  </div>
+  <div class="severity-guide">
+    <span><b class="badge critical">Critical</b> Fix immediately.</span>
+    <span><b class="badge high">High</b> Important security issue.</span>
+    <span><b class="badge medium">Medium</b> Should be fixed soon.</span>
+    <span><b class="badge low">Low</b> Minor issue or improvement.</span>
+    <span><b class="badge info">Info</b> For awareness and documentation.</span>
+  </div>
+  <div class="results-tools">
+    <label>Search findings<input data-findings-search type="search" placeholder="Search findings..."></label>
+    <div class="filter-tabs" data-severity-filters>
+      <button class="filter-tab active" type="button" data-severity-filter="all">All</button>
+      <button class="filter-tab" type="button" data-severity-filter="critical">Critical</button>
+      <button class="filter-tab" type="button" data-severity-filter="high">High</button>
+      <button class="filter-tab" type="button" data-severity-filter="medium">Medium</button>
+      <button class="filter-tab" type="button" data-severity-filter="low">Low</button>
+      <button class="filter-tab" type="button" data-severity-filter="info">Info</button>
+    </div>
+  </div>
+  <p class="empty-state" data-findings-empty>No findings detected in this safe scan.</p>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Severity</th><th>Vulnerability Name</th><th>Affected URL</th><th>Evidence</th><th>Impact</th><th>Recommendation</th><th>Status</th><th>View Details</th></tr></thead>
+      <tbody data-findings-table></tbody>
+    </table>
+  </div>
+  <p class="form-message" data-results-message></p>
+</article>
+{% endblock %}

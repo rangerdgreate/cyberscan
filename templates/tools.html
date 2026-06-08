@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="tools-layout" data-tools-page>
+  <aside class="tools-tabs">
+    {% for category, items in tool_categories.items() %}
+    <button class="tool-category-tab {% if loop.first %}active{% endif %}" type="button" data-tool-category="{{ category|replace(' ', '-')|lower }}">{{ category }}</button>
+    {% endfor %}
+  </aside>
+  <div class="tools-catalog">
+    {% for category, items in tool_categories.items() %}
+    <section class="tool-category-panel {% if loop.first %}active{% endif %}" data-tool-panel="{{ category|replace(' ', '-')|lower }}">
+      <div class="section-head">
+        <div>
+          <span class="eyebrow">Safe Prototype</span>
+          <h2>{{ category }}</h2>
+        </div>
+        <span class="badge info">{{ items|length }} tools</span>
+      </div>
+      <div class="tool-card-grid">
+        {% for tool in items %}
+        <article class="tool-catalog-card">
+          <span class="tool-icon">{{ tool.name[:2].upper() }}</span>
+          <h3>{{ tool.name }}</h3>
+          <p>{{ tool.description }}</p>
+          <div class="actions">
+            <a class="btn primary" href="{{ url_for('tool_page', tool_slug=tool.slug) }}">Open Tool</a>
+            <span class="badge info">Safe</span>
+          </div>
+        </article>
+        {% endfor %}
+      </div>
+    </section>
+    {% endfor %}
+  </div>
+  <aside class="card tools-feature-panel">
+    <span class="eyebrow">CyberScan Suite</span>
+    <h2>Authorized tools for capstone defense</h2>
+    <p class="muted">Every tool uses controlled requests, small lists, rate delays, and explicit authorization. Findings are saved to MongoDB and shown on the Results page.</p>
+    <a class="btn" href="{{ url_for('reports') }}">View Reports</a>
+  </aside>
+</section>
+{% endblock %}

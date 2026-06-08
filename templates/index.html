@@ -1,0 +1,188 @@
+{% extends "base.html" %}
+{% block landing %}
+<main class="landing-page">
+  <header class="top-navbar">
+    <div class="navbar-container">
+      <a class="navbar-logo" href="{{ url_for('root') }}">
+        <span class="logo-badge">CS</span>
+        <span class="logo-text">CyberScan<small>Security Scanner</small></span>
+      </a>
+      <button class="mobile-menu-toggle" type="button" data-mobile-menu-toggle aria-label="Toggle navigation">Menu</button>
+      <nav class="navbar-menu" data-navbar-menu>
+        {% set nav = {
+          "Product": ["Website Scanner", "Security Header Check", "SSL/TLS Check", "Cookie Security Check", "Report Generator"],
+          "Solutions": ["For Students", "For Developers", "For Small Businesses", "For Authorized Testing"],
+          "Pricing": ["Capstone Demo", "Local Deployment", "Report Exports"],
+          "Services": ["Vulnerability Scanning", "Authenticated Scanning", "Password Security Audit", "Report Generation"],
+          "Company": ["About CyberScan", "Capstone Project", "Contact"],
+          "Resources": ["Documentation", "Help Center", "FAQ", "Security Guide"]
+        } %}
+        {% set tool_links = {
+          "Website Scanner": "website-scanner",
+          "Security Header Check": "website-scanner",
+          "SSL/TLS Check": "ssl-scanner",
+          "Cookie Security Check": "website-scanner",
+          "Report Generator": "report-generator",
+          "Vulnerability Scanning": "website-scanner",
+          "Authenticated Scanning": "website-scanner",
+          "Password Security Audit": "password-audit",
+          "Report Generation": "report-generator"
+        } %}
+        {% for label, items in nav.items() %}
+        <div class="navbar-item dropdown">
+          <button class="navbar-link" type="button">{{ label }} <span>v</span></button>
+          <div class="dropdown-menu">
+            {% for item in items %}<a class="dropdown-item" href="{{ url_for('tool_page', tool_slug=tool_links.get(item, 'website-scanner')) }}">{{ item }}</a>{% endfor %}
+          </div>
+        </div>
+        {% endfor %}
+      </nav>
+      <div class="navbar-actions">
+        <a class="btn-login" href="{{ url_for('login') }}">Login</a>
+        <a class="btn-register" href="{{ url_for('tools_page') }}">Open Tools</a>
+      </div>
+    </div>
+  </header>
+
+  <section class="hero-section">
+    <div class="hero-content">
+      <span class="eyebrow">Authorized Security Testing</span>
+      <h1 class="hero-title">Website Vulnerability Scanner for Authorized Testing</h1>
+      <p class="hero-subtitle">CyberScan helps users scan authorized websites for common security issues, review risk levels, and generate professional reports.</p>
+      <div class="actions">
+        <a class="btn primary" href="{{ url_for('new_scan') }}">Start Scan</a>
+        <a class="btn" href="{{ url_for('tools_page') }}">Open Tools</a>
+        <a class="btn ghost" href="#reports">View Demo Report</a>
+      </div>
+    </div>
+    <div class="hero-visual">
+      <img src="{{ url_for('static', filename='images/hero-scanner.svg') }}" alt="CyberScan scanner interface preview">
+      <form class="scanner-card" action="{{ url_for('login') }}">
+        <div class="scan-tabs" data-scan-tabs>
+          <button class="scan-tab active" type="button">Light Scan</button>
+          <button class="scan-tab" type="button">Deep Scan</button>
+          <button class="scan-tab" type="button">Authenticated Scan</button>
+        </div>
+        <label>Target URL<input placeholder="example.com" autocomplete="off"></label>
+        <label>Protocol<select><option>HTTPS</option><option>HTTP</option></select></label>
+        <button class="btn primary" type="submit">Start Scan</button>
+        <p class="warning-note">Only scan websites you own or have written permission to test.</p>
+      </form>
+    </div>
+  </section>
+
+  <section id="features" class="landing-section">
+    <span class="eyebrow">Capabilities</span>
+    <h2>Safe scanner modules for capstone defense</h2>
+    <div class="feature-grid">
+      {% set features = [
+        ("vulnerability-scan.svg", "Website Vulnerability Scanner", "website-scanner"),
+        ("risk-report.svg", "Security Header Check", "website-scanner"),
+        ("security-shield.svg", "SSL/TLS Check", "ssl-scanner"),
+        ("security-shield.svg", "Cookie Security", "website-scanner"),
+        ("vulnerability-scan.svg", "Form Inspection", "form-inspector"),
+        ("vulnerability-scan.svg", "SQL Error Pattern Check", "sql-checker"),
+        ("vulnerability-scan.svg", "Reflected XSS Safe Marker Check", "xss-checker"),
+        ("authenticated-scan.svg", "Exposed Path Check", "exposed-path"),
+        ("authenticated-scan.svg", "Authenticated Scan", "website-scanner"),
+        ("risk-report.svg", "Basic TCP Port Check", "port-scanner"),
+        ("report-preview.svg", "Report Generator", "report-generator")
+      ] %}
+      {% for icon, title, slug in features %}
+      <article class="feature-card">
+        <img src="{{ url_for('static', filename='images/' ~ icon) }}" alt="">
+        <strong>{{ title }}</strong>
+        <p>Safe, bounded checks designed for authorized assessment and clear reporting.</p>
+        <a class="btn" href="{{ url_for('tool_page', tool_slug=slug) }}">Open Tool</a>
+      </article>
+      {% endfor %}
+    </div>
+  </section>
+
+  <section class="landing-section how-it-works">
+    <span class="eyebrow">Workflow</span>
+    <h2>How CyberScan Works</h2>
+    <div class="step-grid">
+      {% for step in ["Enter authorized target", "Choose scan type", "Run safe scanner", "Review findings", "Generate report"] %}
+      <article><span>{{ loop.index }}</span><strong>{{ step }}</strong></article>
+      {% endfor %}
+    </div>
+  </section>
+
+  <section class="platform-feature-section">
+    <div class="platform-feature-heading">
+      <span class="eyebrow">Platform</span>
+      <h2>Easy enough for quick scans. Advanced enough for deeper security testing.</h2>
+    </div>
+    <div class="platform-feature-list">
+      {% set rows = [
+        ("Start scanning with a local web dashboard", "CyberScan allows users to run authorized website security scans through a simple web-based dashboard. Users can enter a target URL, choose scan options, and start a scan without using complicated command-line steps."),
+        ("Customize scans based on project needs", "Users can choose between Light Scan, Deep Scan, and Authenticated Scan. They can also adjust max pages, rate limits, include paths, exclude paths, session cookies, and security check options."),
+        ("Automate website security checks safely", "CyberScan supports safe automated checks for security headers, SSL/TLS issues, insecure cookies, exposed paths, form security indicators, SQL error patterns, reflected XSS markers, and basic TCP port exposure."),
+        ("Scan authenticated pages with permission", "CyberScan can support authenticated scanning when the user provides valid cookies, headers, or login details for a website they own or have written permission to test."),
+        ("Generate clear security reports", "After scanning, CyberScan organizes findings by severity level and provides evidence, impact, recommendations, and exportable reports in HTML, JSON, and CSV formats."),
+        ("Built for safe capstone testing", "CyberScan is designed for educational and authorized security testing only. It does not perform destructive attacks, denial-of-service testing, credential stuffing, password spraying, or unauthorized exploitation.")
+      ] %}
+      {% for title, description in rows %}
+      <article class="platform-feature-row">
+        <h3 class="platform-feature-title">{{ title }}</h3>
+        <p class="platform-feature-description">{{ description }}</p>
+      </article>
+      {% endfor %}
+    </div>
+  </section>
+
+  <section id="reports" class="landing-section report-preview">
+    <div>
+      <span class="eyebrow">Report Preview</span>
+      <h2>Professional output for findings and remediation</h2>
+      <p>Summarize risk, evidence, impact, and recommendations with a clear disclaimer for authorized security testing.</p>
+      <div class="actions"><a class="btn primary" href="{{ url_for('reports') }}">Generate Report</a><a class="btn" href="{{ url_for('login') }}">Download Sample</a></div>
+    </div>
+    <div class="preview-card report-demo-card">
+      <img src="{{ url_for('static', filename='images/report-preview.svg') }}" alt="CyberScan report preview">
+      <div class="risk-grid">
+        <div><span>Critical</span><strong>0</strong></div>
+        <div><span>High</span><strong>2</strong></div>
+        <div><span>Medium</span><strong>4</strong></div>
+      </div>
+      <table>
+        <thead><tr><th>Severity</th><th>Finding</th><th>Recommendation</th></tr></thead>
+        <tbody>
+          <tr><td><span class="badge high">High</span></td><td>Missing Content Security Policy</td><td>Add a strict CSP header.</td></tr>
+          <tr><td><span class="badge medium">Medium</span></td><td>Cookie missing HttpOnly</td><td>Set HttpOnly and Secure flags.</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section class="faq-section">
+    <div class="faq-container">
+      <h2 class="faq-title">Common questions about CyberScan</h2>
+      <div class="faq-list">
+        {% set faqs = [
+          ("What is CyberScan?", "CyberScan is a local web-based vulnerability scanner built with Python. It helps authorized users check websites for common security issues and generate reports."),
+          ("What is a web vulnerability scanner?", "A web vulnerability scanner is a tool that checks a website for possible security weaknesses such as missing security headers, insecure cookies, exposed paths, form issues, and other common risks."),
+          ("What types of vulnerabilities can CyberScan detect?", "CyberScan can check for missing security headers, SSL/TLS issues, insecure cookies, exposed sensitive paths, directory listing indicators, form security issues, SQL error patterns, reflected XSS markers, mixed content, and basic TCP port exposure."),
+          ("What is the difference between Light Scan and Deep Scan?", "A Light Scan performs basic checks quickly. A Deep Scan performs more detailed crawling and additional checks within the allowed scan settings."),
+          ("Can CyberScan scan password-protected websites?", "Yes, when the user provides valid session cookies, headers, or login details for a website they are authorized to test."),
+          ("Does CyberScan perform brute-force attacks?", "No. It only supports a limited Authorized Password Security Audit for approved testing environments with attempt limits, delays, and authorization confirmation."),
+          ("Why is authorization required before scanning?", "Scanning a website without permission may be illegal or harmful. CyberScan is designed only for owned or explicitly authorized targets."),
+          ("How long does a scan take?", "Scan time depends on target size, scan type, maximum pages, rate limit, and enabled options."),
+          ("What do the risk levels mean?", "Critical and High findings need urgent attention, Medium findings should be fixed soon, and Low or Info findings provide improvement suggestions."),
+          ("Can CyberScan generate reports?", "Yes. CyberScan can generate HTML, JSON, and CSV reports with summary, evidence, impact, and recommendations."),
+          ("Does CyberScan replace professional penetration testing?", "No. CyberScan is a capstone prototype and educational tool for common risk discovery.")
+        ] %}
+        {% for question, answer in faqs %}
+        <article class="faq-item">
+          <button class="faq-question" type="button">{{ question }} <span class="faq-icon">+</span></button>
+          <div class="faq-answer"><p>{{ answer }}</p></div>
+        </article>
+        {% endfor %}
+      </div>
+    </div>
+  </section>
+
+  <footer class="landing-footer">CyberScan is for educational and authorized security testing only.</footer>
+</main>
+{% endblock %}

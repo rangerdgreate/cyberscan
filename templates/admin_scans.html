@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="admin-layout">
+  <aside class="admin-sidebar"><span class="admin-badge">Admin</span>{% for label, endpoint in admin_nav %}<a href="{{ url_for(endpoint) }}">{{ label }}</a>{% endfor %}</aside>
+  <div class="admin-main">
+    <article class="card">
+      <div class="section-head"><h2>Scan Monitoring</h2><span class="badge info">All users</span></div>
+      <div class="admin-filter-bar">
+        <input type="search" placeholder="Filter by user, tool, status, severity..." data-admin-table-filter>
+      </div>
+      <div class="table-wrap"><table class="admin-table" data-admin-table><thead><tr><th>User</th><th>Tool</th><th>Target</th><th>Scan Type</th><th>Status</th><th>Started At</th><th>Finished At</th><th>Findings Count</th><th>View Results</th></tr></thead><tbody>
+        {% for scan in scans %}
+        <tr>
+          <td>{{ scan.user_email or scan.owner_email }}</td>
+          <td>{{ scan.tool or scan.scan_name }}</td>
+          <td>{{ scan.target }}</td>
+          <td>{{ scan.scan_type or scan.type }}</td>
+          <td>{{ scan.status }}</td>
+          <td>{{ scan.started_at or scan.started }}</td>
+          <td>{{ scan.finished_at or "-" }}</td>
+          <td>{{ scan.findings_count or scan.summary.total or 0 }}</td>
+          <td><a class="btn" href="{{ url_for('results', scan_id=scan.scan_id or scan._id) }}">View Results</a></td>
+        </tr>
+        {% else %}
+        <tr><td colspan="9">No scans have been saved yet.</td></tr>
+        {% endfor %}
+      </tbody></table></div>
+    </article>
+  </div>
+</section>
+{% endblock %}

@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="admin-layout">
+  <aside class="admin-sidebar"><span class="admin-badge">Admin</span>{% for label, endpoint in admin_nav %}<a href="{{ url_for(endpoint) }}">{{ label }}</a>{% endfor %}</aside>
+  <div class="admin-main">
+    {% if message %}<p class="form-message">{{ message }}</p>{% endif %}
+    <article class="card">
+      <div class="section-head"><h2>Tool Management</h2><span class="badge info">Normal user access</span></div>
+      <p class="warning-note">Disabled tools are hidden from normal users and cannot run through the API.</p>
+      <form method="post" action="{{ url_for('admin_tools_update') }}">
+        <div class="tool-card-grid">
+          {% for tool in tools %}
+          <label class="tool-catalog-card">
+            <span class="tool-icon">{{ tool.tool_name[:2]|upper }}</span>
+            <strong>{{ tool.tool_name }}</strong>
+            <small>{{ tool.category }}</small>
+            <span class="check-line"><input name="enabled_tools" value="{{ tool.tool_key }}" type="checkbox" {% if tool.enabled != false %}checked{% endif %}> Enabled</span>
+          </label>
+          {% endfor %}
+        </div>
+        <div class="actions"><button class="btn primary" type="submit">Save Tool Settings</button></div>
+      </form>
+    </article>
+  </div>
+</section>
+{% endblock %}

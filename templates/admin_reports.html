@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="admin-layout">
+  <aside class="admin-sidebar"><span class="admin-badge">Admin</span>{% for label, endpoint in admin_nav %}<a href="{{ url_for(endpoint) }}">{{ label }}</a>{% endfor %}</aside>
+  <div class="admin-main">
+    <article class="card">
+      <div class="section-head"><h2>Generated Reports</h2><span class="badge info">All users</span></div>
+      <div class="admin-filter-bar"><input type="search" placeholder="Filter reports..." data-admin-table-filter></div>
+      <div class="table-wrap"><table class="admin-table" data-admin-table><thead><tr><th>Report Name</th><th>User</th><th>Target</th><th>Tool</th><th>Format</th><th>Created Date</th><th>Download</th><th>View Results</th></tr></thead><tbody>
+        {% for report in reports %}
+        <tr>
+          <td>{{ report.report_name }}</td>
+          <td>{{ report.user_email }}</td>
+          <td>{{ report.target }}</td>
+          <td>{{ report.tool }}</td>
+          <td>{{ report.format }}</td>
+          <td>{{ report.created_at }}</td>
+          <td><a class="btn" href="{{ url_for('admin_report_file', filename=report.report_name) }}">Download</a></td>
+          <td><a class="btn" href="{{ url_for('results', scan_id=report.scan_id) }}">View Results</a></td>
+        </tr>
+        {% else %}
+        <tr><td colspan="8">No reports generated yet.</td></tr>
+        {% endfor %}
+      </tbody></table></div>
+    </article>
+  </div>
+</section>
+{% endblock %}

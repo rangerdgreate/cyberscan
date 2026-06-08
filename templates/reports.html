@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="split">
+  <article class="card image-card">
+    <img src="{{ url_for('static', filename='images/report-preview.svg') }}" alt="CyberScan report preview">
+  </article>
+  <article class="card">
+    <h2>Report Contents</h2>
+    <p class="muted">Project Name: CyberScan, target URL, scan date, scan type, risk summary, findings table, evidence, impact, recommendations, and authorization disclaimer.</p>
+    <p class="warning-note">No reports generated yet? Run a scan first, then generate a report.</p>
+    <div class="actions"><a class="btn" href="{{ url_for('results') }}">Back to Results</a><button class="btn primary" data-generate-report>Preview Report</button></div>
+  </article>
+</div>
+<div class="cards four">
+  <article class="card report-card"><strong>HTML</strong><h2>HTML Report</h2><p>Best for printing or submitting to your teacher/client.</p><button class="btn primary" data-download-report="html">Download HTML Report</button></article>
+  <article class="card report-card"><strong>JSON</strong><h2>JSON Report</h2><p>Best for developers or system integration.</p><button class="btn primary" data-download-report="json">Download JSON Report</button></article>
+  <article class="card report-card"><strong>CSV</strong><h2>CSV Report</h2><p>Best for spreadsheet review.</p><button class="btn primary" data-download-report="csv">Download CSV Report</button></article>
+  <article class="card report-card"><strong>EX</strong><h2>Executive Summary</h2><p>Short summary for non-technical readers.</p><button class="btn primary" data-generate-report>Generate Report</button></article>
+</div>
+<article class="card">
+  <div class="section-head"><div><h2>Professional Pentest Report Generator</h2><p class="muted">Includes CyberScan project name, target URL, scan date, authorization context, compliance mapping, risk overview, findings table, detailed findings, recommendations, and authorization disclaimer.</p></div><div class="actions"><button class="btn primary" data-generate-report>Generate Report</button><button class="btn" data-share-report>Create Share Link</button></div></div>
+  <p class="warning-note">This report is generated for authorized security testing only.</p>
+  <p class="form-message" data-report-message></p>
+</article>
+<article class="card">
+  <h2>Commercial Report Controls</h2>
+  <p class="muted">Secure report sharing uses expiring token links stored in local file-based metadata. Access is logged for accountability without requiring a database.</p>
+  <p class="form-message" data-share-message></p>
+</article>
+{% endblock %}

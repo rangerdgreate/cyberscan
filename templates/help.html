@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="faq-section in-app">
+  <div class="faq-container">
+    <div>
+      <h2 class="faq-title">CyberScan Help Center</h2>
+      <p class="muted">Simple explanations for students, teachers, and non-expert users.</p>
+    </div>
+    <div class="faq-list">
+      {% set faqs = [
+        ("Getting Started", "Open New Scan, enter a website URL you own or have permission to test, confirm authorization, then click Start Scan."),
+        ("How to Run a Scan", "Use Light Scan for a fast first check. Use Deep Scan when you need more crawling. Use Authenticated Scan only when you have approved login access."),
+        ("Understanding Risk Levels", "Critical means fix immediately. High is important. Medium should be fixed soon. Low is a minor improvement. Info is for awareness."),
+        ("Understanding Reports", "HTML is best for printing or submission. JSON is for developers. CSV is best for spreadsheet review."),
+        ("Safe and Authorized Testing", "CyberScan is for approved testing only. It avoids destructive attacks, denial-of-service checks, and uncontrolled password attempts."),
+        ("What is a vulnerability scan?", "It is a safe review that checks for common website weaknesses and gives recommended fixes."),
+        ("What is OWASP?", "OWASP is a well-known web security reference used to organize common application risks."),
+        ("What is SSL/TLS?", "SSL/TLS protects data while it travels between the browser and the website."),
+        ("What are security headers?", "Security headers are website settings that help browsers block risky behavior."),
+        ("What are cookies?", "Cookies store small pieces of session information. CyberScan checks whether important cookie protections are present."),
+        ("What is an XSS marker check?", "CyberScan uses a harmless test marker to see whether user input is reflected by a page."),
+        ("What is a SQL error pattern check?", "CyberScan looks for visible database error messages using safe checks. It does not extract data."),
+        ("What is authenticated scanning?", "Authenticated scanning uses approved headers, cookies, or login details to inspect pages that require login."),
+        ("What is a password security audit?", "It is a limited, authorized check with attempt limits, delays, and masked password evidence.")
+      ] %}
+      {% for question, answer in faqs %}
+      <article class="faq-item">
+        <button class="faq-question" type="button">{{ question }} <span class="faq-icon">+</span></button>
+        <div class="faq-answer"><p>{{ answer }}</p></div>
+      </article>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+{% endblock %}

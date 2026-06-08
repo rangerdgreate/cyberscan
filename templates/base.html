@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{{ title }} | CyberScan</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body data-page="{{ page }}">
+  {% if page == "landing" %}
+    {% block landing %}{% endblock %}
+  {% elif page == "login" %}
+    {% block login %}{% endblock %}
+  {% else %}
+    <div class="app-shell">
+      <aside class="sidebar">
+        <a class="brand" href="{{ url_for('dashboard') }}"><span class="brand-mark">CS</span><span>CyberScan</span></a>
+        <nav class="nav">
+          <a href="{{ url_for('dashboard') }}" data-nav="dashboard"><span>DB</span>Dashboard</a>
+          {% if current_user and current_user.role == "admin" %}
+          <a href="{{ url_for('admin_dashboard') }}" data-nav="admin-dashboard"><span>AD</span>Admin Dashboard</a>
+          {% endif %}
+          <a href="{{ url_for('tools_page') }}" data-nav="tools"><span>TL</span>Tools</a>
+          <a href="{{ url_for('new_scan') }}" data-nav="new-scan"><span>NS</span>New Scan</a>
+          <a href="{{ url_for('scan_progress') }}" data-nav="scan-progress"><span>PR</span>Scan Progress</a>
+          <a href="{{ url_for('results') }}" data-nav="results"><span>RS</span>Results</a>
+          <a href="{{ url_for('reports') }}" data-nav="reports"><span>RP</span>Reports</a>
+          {% if current_user and "settings:manage" in current_user.permissions %}
+          <a href="{{ url_for('settings') }}" data-nav="settings" data-requires-permission="settings:manage"><span>ST</span>Settings</a>
+          {% endif %}
+          <a href="{{ url_for('help_page') }}" data-nav="help"><span>?</span>Help / FAQ</a>
+        </nav>
+        <div class="sidebar-note">Authorized, safe scanning only. No brute force, exploit automation, denial-of-service, or unauthorized testing features are included.</div>
+      </aside>
+
+      <main class="main">
+        <header class="topbar">
+          <div>
+            <h1>{{ heading }}</h1>
+            <p>{{ subtitle }}</p>
+          </div>
+          <div class="top-actions">
+            <span class="system-status">Local system online</span>
+            <span class="user-chip">{{ current_user.name if current_user else "Guest" }} · {{ current_user.role if current_user else "Guest" }}</span>
+            {% if current_user and "scan:start" in current_user.permissions %}
+            <a class="btn primary" href="{{ url_for('new_scan') }}" data-requires-permission="scan:start">Start New Scan</a>
+            {% endif %}
+            <button class="btn danger" type="button" data-logout>Logout</button>
+          </div>
+        </header>
+        <section class="content">
+          {% block content %}{% endblock %}
+        </section>
+      </main>
+    </div>
+    <div class="session-modal-backdrop" data-session-expired-modal hidden>
+      <section class="session-modal" role="dialog" aria-modal="true" aria-labelledby="session-expired-title">
+        <span class="eyebrow">Session Expired</span>
+        <h2 id="session-expired-title">Log in again</h2>
+        <p>Your session expired after 2 minutes of inactivity. Please sign in again to continue using CyberScan.</p>
+        <a class="btn primary" href="{{ url_for('login') }}" data-login-again>Log in again</a>
+      </section>
+    </div>
+  {% endif %}
+  <script src="{{ url_for('static', filename='js/app.js') }}"></script>
+</body>
+</html>

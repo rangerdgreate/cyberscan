@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% block login %}
+<main class="login-layout auth-layout">
+  <section class="login-card auth-card">
+    <div class="brand dark"><span class="brand-mark">CS</span><span>CyberScan</span></div>
+    <div>
+      <h1>Create your account</h1>
+      <p class="muted">Your email is verified. Choose a username and password to finish setup.</p>
+    </div>
+    {% if error %}<p class="form-message">{{ error }}</p>{% endif %}
+    <form class="form-stack" action="{{ url_for('create_account') }}" method="post" autocomplete="off">
+      <label>Verified email address<input name="email" value="{{ verified_email }}" readonly></label>
+      <label>Username<input name="username" required autocomplete="username"></label>
+      <label>Password<span class="password-field"><input name="password" type="password" minlength="8" required autocomplete="new-password"><button type="button" data-toggle-password>Show</button></span></label>
+      <label>Confirm password<span class="password-field"><input name="confirm_password" type="password" minlength="8" required autocomplete="new-password"><button type="button" data-toggle-password>Show</button></span></label>
+      <button class="btn primary" type="submit">Create Account</button>
+    </form>
+    <p class="warning-note">Use a password with at least 8 characters. Keep your account private because it can access your scan history and reports.</p>
+  </section>
+  <section class="login-hero">
+    <div class="login-hero-copy">
+      <span class="eyebrow">CyberScan Account</span>
+      <h2>Use a verified account to access your own scans and reports.</h2>
+      <p>Your password is hashed before storage, and your scan history is isolated from other users.</p>
+    </div>
+    <div class="auth-visual"><img src="{{ url_for('static', filename='images/email-verification.svg') }}" alt=""></div>
+  </section>
+</main>
+{% endblock %}

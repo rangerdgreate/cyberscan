@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+{% block login %}
+<main class="login-layout auth-layout">
+  <section class="login-card auth-card">
+    <div class="brand dark"><span class="brand-mark">CS</span><span>CyberScan</span></div>
+    <div>
+      <h1>Verification sent</h1>
+      <p class="muted">Check your email for the verification link. In local demo mode, use the button below.</p>
+    </div>
+    {% if development_mode %}
+      <p class="warning-note">Local capstone mode is enabled, so no email inbox is required.</p>
+      {% if development_link %}
+        <a class="btn primary" href="{{ development_link }}">Continue to Create Account</a>
+      {% endif %}
+      <p class="muted">CyberScan keeps this step to confirm account ownership during the registration flow.</p>
+    {% else %}
+      <p class="warning-note">Open the verification link within 15 minutes.</p>
+    {% endif %}
+    <form class="form-stack" action="{{ url_for('resend_verification') }}" method="post">
+      <input name="email" type="hidden" value="{{ email }}">
+      <button class="btn" type="submit">Resend Verification Email</button>
+      <a class="btn primary" href="{{ url_for('login') }}">Back to Login</a>
+    </form>
+  </section>
+  <section class="login-hero">
+    <div class="login-hero-copy">
+      <span class="eyebrow">Email Verification</span>
+      <h2>Your account setup continues after verification.</h2>
+      <p>The verification link can only be used once and expires after 15 minutes.</p>
+    </div>
+    <div class="auth-visual"><img src="{{ url_for('static', filename='images/email-verification.svg') }}" alt=""></div>
+  </section>
+</main>
+{% endblock %}

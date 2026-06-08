@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% block login %}
+<main class="login-layout auth-layout">
+  <section class="login-card auth-card">
+    <div class="brand dark"><span class="brand-mark">CS</span><span>CyberScan</span></div>
+    <div>
+      <h1>Verify your email</h1>
+      <p class="muted">Enter your email address. CyberScan will send a verification link before account creation.</p>
+    </div>
+    <form class="form-stack" action="{{ url_for('send_verification') }}" method="post" autocomplete="off">
+      <label>Email address<input name="email" type="email" placeholder="name@example.com" required autocomplete="email"></label>
+      <button class="btn primary" type="submit">Send Verification Email</button>
+      <a class="btn" href="{{ url_for('login') }}">Back to Login</a>
+    </form>
+    <p class="warning-note">Please verify your email before creating your CyberScan account.</p>
+  </section>
+  <section class="login-hero">
+    <div class="login-hero-copy">
+      <span class="eyebrow">Account Registration</span>
+      <h2>CyberScan verifies your email before creating a new account.</h2>
+      <p>This protects access to scan history, reports, and role-based workflows while keeping the registration process simple and professional.</p>
+    </div>
+    <div class="auth-visual"><img src="{{ url_for('static', filename='images/email-verification.svg') }}" alt=""></div>
+  </section>
+</main>
+{% endblock %}

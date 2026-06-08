@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% block login %}
+<main class="login-layout auth-layout">
+  <section class="login-card auth-card">
+    <div class="brand dark"><span class="brand-mark">CS</span><span>CyberScan</span></div>
+    <div>
+      <h1>Verification problem</h1>
+      <p class="muted">{{ error }}</p>
+    </div>
+    <a class="btn primary" href="{{ url_for('register') }}">Request New Verification Email</a>
+    <a class="btn" href="{{ url_for('login') }}">Back to Login</a>
+  </section>
+  <section class="login-hero">
+    <div class="login-hero-copy">
+      <span class="eyebrow">Expired or Invalid Link</span>
+      <h2>Request a fresh verification link to continue.</h2>
+      <p>Verification links expire after 15 minutes and can only be used once.</p>
+    </div>
+    <div class="auth-visual"><img src="{{ url_for('static', filename='images/email-verification.svg') }}" alt=""></div>
+  </section>
+</main>
+{% endblock %}

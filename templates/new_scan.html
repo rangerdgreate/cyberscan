@@ -1,0 +1,96 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="split">
+  <article class="card">
+    <div class="section-head"><h2>Configure Scan</h2><span class="badge info">Safe Mode</span></div>
+    <ol class="setup-steps" aria-label="Scan setup steps">
+      <li><span>1</span><strong>Choose a tool</strong><small>Website Scanner is recommended for beginners.</small></li>
+      <li><span>2</span><strong>Enter target</strong><small>Use a website you own or have written permission to test.</small></li>
+      <li><span>3</span><strong>Confirm permission</strong><small>CyberScan will not start until authorization is confirmed.</small></li>
+    </ol>
+    <form class="form-stack" data-scan-form data-selected-tool="{{ selected_tool or 'website_scanner' }}">
+      <label>Selected Tool
+        <select name="selected_tool" data-tool-select>
+          {% for key, label in tool_labels.items() %}
+          <option value="{{ key }}" {% if key == selected_tool %}selected{% endif %}>{{ label }}</option>
+          {% endfor %}
+        </select>
+        <small>Recommended: Website Scanner for a complete beginner-friendly check.</small>
+      </label>
+      <div class="scan-tabs" data-scan-tabs>
+        <button class="scan-tab active" type="button" title="Fast basic check for headers, cookies, SSL/TLS, and common paths.">Light Scan</button>
+        <button class="scan-tab" type="button" title="More detailed check with crawling, forms, links, and scripts.">Deep Scan</button>
+        <button class="scan-tab" type="button" title="For pages that require login. Use only with permission.">Authenticated Scan</button>
+      </div>
+      <div class="helper-grid">
+        <p><strong>Light Scan:</strong> Fast basic check for headers, cookies, SSL/TLS, and common paths.</p>
+        <p><strong>Deep Scan:</strong> More detailed check with crawling, forms, links, and scripts.</p>
+        <p><strong>Authenticated Scan:</strong> For pages that require login. Use only with permission.</p>
+      </div>
+      <label>Target URL / Host / Domain <span class="required-text">Required</span><input name="target" type="text" placeholder="https://example.com" required><small>Example: https://example.com</small></label>
+      <section class="audit-panel tool-options">
+        <div class="section-head"><h2>Tool Options</h2><span class="badge info">Controlled</span></div>
+        <label>Target Host / Domain<input name="target_host" placeholder="example.com"><small>Use this for host-based tools such as port or subdomain checks.</small></label>
+        <label>Port List<input name="tool_ports" placeholder="80,443,8080,8443"><small>Performs safe TCP connection checks only. No service enumeration or exploitation.</small></label>
+        <label>Wordlist / Subdomain List<textarea name="tool_wordlist" placeholder="admin&#10;login&#10;api&#10;docs"></textarea><small>Uses a small controlled wordlist only. Large brute-force lists are not allowed.</small></label>
+        <div class="two-col">
+          <label>Max Requests<input name="tool_max_requests" type="number" min="1" max="25" value="10"><small>Recommended: 10</small></label>
+          <label>Tool Delay Seconds<input name="tool_delay" type="number" min="0" max="5" step="0.1" value="0.5"><small>Recommended: 0.5 seconds</small></label>
+        </div>
+      </section>
+      <label>Protocol<select name="protocol"><option>HTTPS</option><option>HTTP</option></select></label>
+      <label>Scan Name<input name="scan_name" placeholder="Capstone Website Baseline"><small>Optional name to identify this scan later.</small></label>
+      <div class="two-col">
+        <label>Max Pages<input name="max_pages" type="number" min="1" max="500" value="10"><small>Recommended for students: 10 pages.</small></label>
+        <label>Rate Limit<input name="rate_limit" type="number" min="1" max="50" value="1"><small>Recommended: 1 request per second.</small></label>
+      </div>
+      <label>Include Paths<input name="include_paths" placeholder="/login, /products, /account"><small>Optional: only check these website areas.</small></label>
+      <label>Exclude Paths<input name="exclude_paths" placeholder="/logout, /delete"><small>Optional: skip pages that should not be touched.</small></label>
+      <section class="audit-panel">
+        <div class="section-head"><h2>Legal Authorization Workflow</h2><span class="badge info">Required</span></div>
+        <div class="two-col">
+          <label>Organization / Client<input name="authorization_organization" placeholder="Example Organization"></label>
+          <label>Authorized Contact<input name="authorization_contact" placeholder="security@example.com"></label>
+        </div>
+        <label>Approved Scope<textarea name="authorization_scope" placeholder="https://example.com and approved subpaths only"></textarea></label>
+        <label class="check-line"><input name="authorization_attested" type="checkbox"> I confirm this target is within the approved written testing scope.</label>
+      </section>
+      <label>Custom Headers<textarea name="auth_headers" placeholder="Authorization: Bearer TOKEN"></textarea><small>Optional. Use only approved testing credentials.</small></label>
+      <label>Session Cookie<textarea name="session_cookies" placeholder="sessionid=VALUE"></textarea><small>Optional. For authenticated scans only.</small></label>
+      <div class="two-col">
+        <label>Optional Login URL<input name="login_url" placeholder="https://example.com/login"></label>
+        <label>Optional Username<input name="login_username" autocomplete="off"></label>
+      </div>
+      <label>Optional Password<input name="login_password" type="password" autocomplete="new-password"></label>
+      <p class="warning-note">Authenticated scanning is only allowed for websites where the user has permission to test. Passwords are masked in generated reports.</p>
+
+      <section class="audit-panel">
+        <div class="section-head"><h2>Authorized Password Security Audit</h2><span class="badge medium">Optional</span></div>
+        <label class="check-line"><input name="password_audit_enabled" type="checkbox"> Enable Password Audit</label>
+        <label>Login URL<input name="password_audit_login_url" placeholder="https://example.com/login"></label>
+        <label>Username<input name="password_audit_username" autocomplete="off"></label>
+        <label>Small Password List<textarea name="password_audit_password_list" placeholder="admin123&#10;password123&#10;changeme"></textarea></label>
+        <div class="two-col">
+          <label>Maximum Attempt Limit<input name="password_audit_max_attempts" type="number" min="1" max="10" value="5"></label>
+          <label>Delay Between Attempts<input name="password_audit_delay_seconds" type="number" min="0" max="5" step="0.5" value="1"></label>
+        </div>
+        <label class="check-line"><input name="password_audit_stop_on_success" type="checkbox" checked> Stop on success</label>
+        <label class="check-line"><input name="password_audit_authorized" type="checkbox"> I confirm I own this login page or have written permission to test it.</label>
+        <p class="warning-note">This feature is limited and safe. It does not perform uncontrolled brute-force attacks.</p>
+      </section>
+
+      <div class="actions"><button class="btn primary" type="submit">Start Scan</button><button class="btn danger" type="button" data-cancel-scan>Cancel Scan</button></div>
+      <p class="form-message" data-scan-message></p>
+    </form>
+  </article>
+  <article class="card">
+    <h2>Security Scan Tools</h2>
+    <div class="tool-grid">
+      {% for tool in tools %}
+      <label class="tool-card"><input type="checkbox" {% if tool.checked %}checked{% endif %} data-tool="{{ tool.key }}"><span>{{ tool.name }}</span><small>{{ tool.description }}</small></label>
+      {% endfor %}
+    </div>
+    <p class="muted">All checks are safe, non-destructive, and intended only for authorized testing.</p>
+  </article>
+</div>
+{% endblock %}

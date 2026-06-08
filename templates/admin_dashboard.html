@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="admin-layout">
+  <aside class="admin-sidebar">
+    <span class="admin-badge">Admin</span>
+    {% for label, endpoint in admin_nav %}
+    <a href="{{ url_for(endpoint) }}">{{ label }}</a>
+    {% endfor %}
+  </aside>
+  <div class="admin-main">
+    <div class="admin-card-grid">
+      <article class="admin-card"><span>Total Users</span><strong>{{ metrics.total_users }}</strong></article>
+      <article class="admin-card"><span>Active Users</span><strong>{{ metrics.active_users }}</strong></article>
+      <article class="admin-card"><span>Disabled Users</span><strong>{{ metrics.disabled_users }}</strong></article>
+      <article class="admin-card"><span>Total Scans</span><strong>{{ metrics.total_scans }}</strong></article>
+      <article class="admin-card"><span>Total Findings</span><strong>{{ metrics.total_findings }}</strong></article>
+      <article class="admin-card"><span>Critical Findings</span><strong>{{ metrics.critical_findings }}</strong></article>
+      <article class="admin-card"><span>High Risk Findings</span><strong>{{ metrics.high_findings }}</strong></article>
+      <article class="admin-card"><span>Reports Generated</span><strong>{{ metrics.reports_generated }}</strong></article>
+    </div>
+    <div class="split">
+      <article class="card">
+        <div class="section-head"><h2>Recent User Activity</h2><a class="link" href="{{ url_for('admin_audit_logs') }}">View logs</a></div>
+        <div class="table-wrap"><table class="admin-table"><thead><tr><th>Date</th><th>User</th><th>Action</th><th>Details</th></tr></thead><tbody>
+          {% for log in metrics.recent_activity %}
+          <tr><td>{{ log.created_at or log.timestamp }}</td><td>{{ log.username or log.actor }}</td><td>{{ log.action }}</td><td>{{ log.details }}</td></tr>
+          {% else %}
+          <tr><td colspan="4">No activity logged yet.</td></tr>
+          {% endfor %}
+        </tbody></table></div>
+      </article>
+      <article class="card">
+        <div class="section-head"><h2>Recent Scans</h2><a class="link" href="{{ url_for('admin_scans') }}">View scans</a></div>
+        <div class="table-wrap"><table class="admin-table"><thead><tr><th>User</th><th>Tool</th><th>Target</th><th>Status</th></tr></thead><tbody>
+          {% for scan in metrics.recent_scans %}
+          <tr><td>{{ scan.user_email or scan.owner_email }}</td><td>{{ scan.tool or scan.scan_name }}</td><td>{{ scan.target }}</td><td>{{ scan.status }}</td></tr>
+          {% else %}
+          <tr><td colspan="4">No scans yet.</td></tr>
+          {% endfor %}
+        </tbody></table></div>
+      </article>
+    </div>
+  </div>
+</section>
+{% endblock %}
