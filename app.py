@@ -170,6 +170,7 @@ EMAIL_SETTINGS = {
     "smtp_use_tls": SMTP_USE_TLS,
     "smtp_use_ssl": SMTP_USE_SSL,
 }
+EMAIL_LAST_ERROR = ""
 TRUSTED_ORIGINS = {
     "http://127.0.0.1",
     "http://127.0.0.1:8006",
@@ -1200,6 +1201,8 @@ def send_otp_email(email, code):
 
 
 def send_verification_email(email, verification_link, allow_dev_link=False):
+    global EMAIL_LAST_ERROR
+    EMAIL_LAST_ERROR = ""
     subject = "CyberScan Email Verification"
     body = (
         "Welcome to CyberScan.\n\n"
@@ -1214,29 +1217,30 @@ def send_verification_email(email, verification_link, allow_dev_link=False):
         return True
 
     if not smtp_configured():
-        print("[EMAIL ERROR] SMTP is incomplete. Set MAIL_SERVER, MAIL_USERNAME, MAIL_PASSWORD, and MAIL_DEFAULT_SENDER.", flush=True)
-        return False
-
-    if Mail is None or FlaskMailMessage is None:
-        print("[EMAIL ERROR] Flask-Mail is not installed. Run: pip install -r requirements.txt", flush=True)
+        missing = []
+        if not EMAIL_SETTINGS.get("smtp_host"):
+            missing.append("MAIL_SERVER")
+        if not EMAIL_SETTINGS.get("smtp_username"):
+            missing.append("MAIL_USERNAME")
+        if not EMAIL_SETTINGS.get("smtp_password"):
+            missing.append("MAIL_PASSWORD")
+        if not EMAIL_SETTINGS.get("smtp_from"):
+            missing.append("MAIL_DEFAULT_SENDER")
+        EMAIL_LAST_ERROR = f"SMTP is incomplete. Missing: {', '.join(missing)}."
+        print(f"[EMAIL ERROR] {EMAIL_LAST_ERROR}", flush=True)
         return False
 
     try:
-        from flask import current_app
-        apply_mail_config_to_app(current_app)
-        mail = current_app.extensions.get("mail")
-        if not mail:
-            mail = Mail(current_app)
-        message = FlaskMailMessage(
-            subject=subject,
-            recipients=[email],
-            body=body,
-            sender=EMAIL_SETTINGS.get("smtp_from") or EMAIL_SETTINGS.get("smtp_username"),
+        send_plain_email(
+            EMAIL_SETTINGS,
+            email,
+            subject,
+            body,
         )
-        mail.send(message)
         return True
     except Exception as exc:
-        print(f"[EMAIL ERROR] {smtp_error_message(exc)}", flush=True)
+        EMAIL_LAST_ERROR = smtp_error_message(exc)
+        print(f"[EMAIL ERROR] {EMAIL_LAST_ERROR}", flush=True)
         return False
 
 
@@ -1287,7 +1291,8 @@ def start_email_verification(email, base_url):
     allow_dev_link = local_verification_links_allowed(base_url or BASE_URL)
     sent = send_verification_email(email, verification_link, allow_dev_link=allow_dev_link)
     if not sent and not allow_dev_link:
-        raise ValueError("Verification email could not be sent. Check Gmail SMTP settings on Render: MAIL_USERNAME, MAIL_PASSWORD app password, MAIL_DEFAULT_SENDER, and DEV_MODE=False.")
+        detail = EMAIL_LAST_ERROR or "Check Gmail SMTP settings on Render."
+        raise ValueError(f"Verification email could not be sent. {detail}")
     if collection is not None:
         collection.insert_one(document)
     else:
